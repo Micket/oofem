@@ -414,16 +414,16 @@ AdaptiveNonLinearStatic :: initializeAdaptiveFrom(EngngModel *sourceProblem)
 int
 AdaptiveNonLinearStatic :: initializeAdaptive(int tStepNumber)
 {
-    int stepinfo [ 2 ];
-
-    stepinfo [ 0 ] = tStepNumber;
-    stepinfo [ 1 ] = 0;
-
-    try {
-        this->restoreContext(NULL, CM_State, ( void * ) stepinfo);
-    } catch(ContextIOERR & c) {
-        c.print();
-        exit(1);
+    std :: unique_ptr< DataStream > stream;
+    if ( this->giveContextFile(stream, tStepNumber, 0, contextMode_read) ) {
+        try {
+            this->restoreContext(*stream, CM_State);
+        } catch(ContextIOERR & c) {
+            c.print();
+            exit(1);
+        }
+    } else {
+        printf("Failed to open context file can not restore step %d\n", tStepNumber);
     }
 
     this->initStepIncrements();
@@ -745,22 +745,11 @@ AdaptiveNonLinearStatic :: adaptiveRemap(Domain *dNew)
 
 
 contextIOResultType
-AdaptiveNonLinearStatic :: saveContext(DataStream *stream, ContextMode mode, void *obj) {
-    int closeFlag = 0;
+AdaptiveNonLinearStatic :: saveContext(DataStream &stream, ContextMode mode)
+{
     contextIOResultType iores;
-    FILE *file = NULL;
 
-    if ( stream == NULL ) {
-        if ( !this->giveContextFile(& file, this->giveCurrentStep()->giveNumber(),
-                                    this->giveCurrentStep()->giveVersion(), contextMode_write) ) {
-            THROW_CIOERR(CIO_IOERR); // override
-        }
-
-        stream = new FileDataStream(file);
-        closeFlag = 1;
-    }
-
-    if ( ( iores = NonLinearStatic :: saveContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = NonLinearStatic :: saveContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
@@ -768,33 +757,15 @@ AdaptiveNonLinearStatic :: saveContext(DataStream *stream, ContextMode mode, voi
         THROW_CIOERR(iores);
     }
 
-    if ( closeFlag ) {
-        fclose(file);
-        delete stream;
-        stream = NULL;
-    }                                                       // ensure consistent records
-
     return CIO_OK;
 }
 
 contextIOResultType
-AdaptiveNonLinearStatic :: restoreContext(DataStream *stream, ContextMode mode, void *obj) {
-    int closeFlag = 0;
-    int istep, iversion;
+AdaptiveNonLinearStatic :: restoreContext(DataStream &stream, ContextMode mode )
+{
     contextIOResultType iores;
-    FILE *file = NULL;
 
-    this->resolveCorrespondingStepNumber(istep, iversion, obj);
-    if ( stream == NULL ) {
-        if ( !this->giveContextFile(& file, istep, iversion, contextMode_read) ) {
-            THROW_CIOERR(CIO_IOERR); // override
-        }
-
-        stream = new FileDataStream(file);
-        closeFlag = 1;
-    }
-
-    if ( ( iores = NonLinearStatic :: restoreContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = NonLinearStatic :: restoreContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
@@ -802,18 +773,13 @@ AdaptiveNonLinearStatic :: restoreContext(DataStream *stream, ContextMode mode, 
         THROW_CIOERR(iores);
     }
 
-    if ( closeFlag ) {
-        fclose(file);
-        delete stream;
-        stream = NULL;
-    } // ensure consistent records
-
     return CIO_OK;
 }
 
 
 void
-AdaptiveNonLinearStatic :: updateDomainLinks() {
+AdaptiveNonLinearStatic :: updateDomainLinks()
+{
     NonLinearStatic :: updateDomainLinks();
     this->defaultErrEstimator->setDomain( this->giveDomain(1) );
 }

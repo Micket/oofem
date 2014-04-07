@@ -75,12 +75,6 @@
 #include <cstdio>
 #include <cstdarg>
 #include <ctime>
-// include unistd.h; needed for access
-#ifdef HAVE_UNISTD_H
- #include <unistd.h>
-#elif _MSC_VER
- #include <io.h>
-#endif
 
 #ifdef __OOFEG
  #include "oofeggraphiccontext.h"
@@ -802,12 +796,16 @@ EngngModel :: saveStepContext(TimeStep *tStep)
     // save context if required
     // default - save only if ALWAYS is set ( see cltypes.h )
 
-    if ( ( this->giveContextOutputMode() == COM_Always ) ||
-        ( this->giveContextOutputMode() == COM_Required ) ) {
-        this->saveContext(NULL, CM_State);
-    } else if ( this->giveContextOutputMode() == COM_UserDefined ) {
-        if ( tStep->giveNumber() % this->giveContextOutputStep() == 0 ) {
-            this->saveContext(NULL, CM_State);
+    if ( this->giveContextOutputMode() == COM_Always ||
+         this->giveContextOutputMode() == COM_Required ||
+        (this->giveContextOutputMode() == COM_UserDefined && tStep->giveNumber() % this->giveContextOutputStep() == 0 ) ) {
+        std :: unique_ptr< DataStream > stream;
+        if ( !this->giveContextFile(stream, this->giveCurrentStep()->giveNumber(),
+                                this->giveCurrentStep()->giveVersion(), contextMode_write) ) {
+            OOFEM_ERROR("Can't open file - Context not stored!");
+        } else {
+            OOFEM_LOG_INFO("Storing context\n");
+            this->saveContext(*stream, CM_State);
         }
     }
 }
@@ -1358,7 +1356,7 @@ EngngModel :: updateDomainLinks()
 };
 
 
-contextIOResultType EngngModel :: saveContext(DataStream *stream, ContextMode mode, void *obj)
+contextIOResultType EngngModel :: saveContext(DataStream &stream, ContextMode mode)
 //
 // this procedure is used mainly for two reasons:
 //
@@ -1371,27 +1369,13 @@ contextIOResultType EngngModel :: saveContext(DataStream *stream, ContextMode mo
 //
 // saving context means: (if needed may be enhanced)
 //
-// - save EngngModel state varialbles as displacement, velocity, .. vectors
+// - save EngngModel state variables as displacement, velocity, .. vectors
 // - save Elements stress, strain and material history.
 //
 // This version saves only Element and Material properties.
 //
 {
     contextIOResultType iores;
-    int closeFlag = 0;
-    FILE *file = NULL;
-
-
-    OOFEM_LOG_INFO("Storing context\n");
-    if ( stream == NULL ) {
-        if ( !this->giveContextFile(& file, this->giveCurrentStep()->giveNumber(),
-                                    this->giveCurrentStep()->giveVersion(), contextMode_write) ) {
-            THROW_CIOERR(CIO_IOERR); // override
-        }
-
-        stream = new FileDataStream(file);
-        closeFlag = 1;
-    }
 
     // store solution step
     if ( ( iores = giveCurrentStep()->saveContext(stream, mode) ) != CIO_OK ) {
@@ -1399,7 +1383,7 @@ contextIOResultType EngngModel :: saveContext(DataStream *stream, ContextMode mo
     }
 
     // store numberOfEquations and domainNeqs array
-    if ( !stream->write(& numberOfEquations, 1) ) {
+    if ( !stream.write(& numberOfEquations, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
@@ -1408,7 +1392,7 @@ contextIOResultType EngngModel :: saveContext(DataStream *stream, ContextMode mo
     }
 
     // store numberOfPrescribedEquations and domainNeqs array
-    if ( !stream->write(& numberOfPrescribedEquations, 1) ) {
+    if ( !stream.write(& numberOfPrescribedEquations, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
@@ -1417,13 +1401,13 @@ contextIOResultType EngngModel :: saveContext(DataStream *stream, ContextMode mo
     }
 
     // store renumber flag
-    if ( !stream->write(renumberFlag) ) {
+    if ( !stream.write(renumberFlag) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
 
     for ( int idomain = 1; idomain <= this->ndomains; idomain++ ) {
-        this->giveDomain(idomain)->saveContext(stream, mode, obj);
+        this->giveDomain(idomain)->saveContext(stream, mode);
     }
 
 
@@ -1435,18 +1419,11 @@ contextIOResultType EngngModel :: saveContext(DataStream *stream, ContextMode mo
         }
     }
 
-
-    if ( closeFlag ) {
-        fclose(file);
-        delete(stream);
-        stream = NULL;
-    }                                                         // ensure consistent records
-
     return CIO_OK;
 }
 
 
-contextIOResultType EngngModel :: restoreContext(DataStream *stream, ContextMode mode, void *obj)
+contextIOResultType EngngModel :: restoreContext(DataStream &stream, ContextMode mode )
 //
 // this procedure is used mainly for two reasons:
 //
@@ -1470,25 +1447,10 @@ contextIOResultType EngngModel :: restoreContext(DataStream *stream, ContextMode
 //
 {
     contextIOResultType iores;
-    int closeFlag = 0, istep, iversion;
-    Domain *domain;
-    FILE *file = NULL;
-
-    this->resolveCorrespondingStepNumber(istep, iversion, obj);
-    OOFEM_LOG_RELEVANT("Restoring context for time step %d.%d\n", istep, iversion);
-
-    if ( stream == NULL ) {
-        if ( !this->giveContextFile(& file, istep, iversion, contextMode_read) ) {
-            THROW_CIOERR(CIO_IOERR);                                                              // override
-        }
-
-        stream = new FileDataStream(file);
-        closeFlag = 1;
-    }
 
     // restore solution step
     if ( currentStep == NULL ) {
-        currentStep = new TimeStep(istep, this, 0, 0., 0., 0);
+        currentStep = new TimeStep(0, this, 0, 0., 0., 0);
     }
 
     if ( ( iores = currentStep->restoreContext(stream, mode) ) != CIO_OK ) {
@@ -1499,7 +1461,7 @@ contextIOResultType EngngModel :: restoreContext(DataStream *stream, ContextMode
 
     int pmstep = currentStep->giveMetaStepNumber();
     if ( nMetaSteps ) {
-        if ( !this->giveMetaStep(pmstep)->isStepValid(istep - 1) ) {
+        if ( !this->giveMetaStep(pmstep)->isStepValid(currentStep->giveNumber() - 1) ) {
             pmstep--;
         }
     }
@@ -1508,11 +1470,11 @@ contextIOResultType EngngModel :: restoreContext(DataStream *stream, ContextMode
         delete previousStep;
     }
 
-    previousStep = new TimeStep(istep - 1, this, pmstep, currentStep->giveTargetTime ( ) - currentStep->giveTimeIncrement(),
+    previousStep = new TimeStep(currentStep->giveNumber() - 1, this, pmstep, currentStep->giveTargetTime ( ) - currentStep->giveTimeIncrement(),
                                 currentStep->giveTimeIncrement(), currentStep->giveSolutionStateCounter() - 1);
 
     // restore numberOfEquations and domainNeqs array
-    if ( !stream->read(& numberOfEquations, 1) ) {
+    if ( !stream.read(& numberOfEquations, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
@@ -1521,7 +1483,7 @@ contextIOResultType EngngModel :: restoreContext(DataStream *stream, ContextMode
     }
 
     // restore numberOfPrescribedEquations and domainNeqs array
-    if ( !stream->read(& numberOfPrescribedEquations, 1) ) {
+    if ( !stream.read(& numberOfPrescribedEquations, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
@@ -1530,13 +1492,13 @@ contextIOResultType EngngModel :: restoreContext(DataStream *stream, ContextMode
     }
 
     // restore renumber flag
-    if ( !stream->read(renumberFlag) ) {
+    if ( !stream.read(renumberFlag) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
     for ( int idomain = 1; idomain <= this->ndomains; idomain++ ) {
-        domain = this->giveDomain(idomain);
-        domain->restoreContext(stream, mode, obj);
+        Domain *domain = this->giveDomain(idomain);
+        domain->restoreContext(stream, mode);
     }
 
     // restore nMethod
@@ -1551,38 +1513,7 @@ contextIOResultType EngngModel :: restoreContext(DataStream *stream, ContextMode
     this->updateAttributes( this->giveCurrentMetaStep() );
     this->initStepIncrements();
 
-    if ( closeFlag ) {
-        fclose(file);
-        delete stream;
-        stream = NULL;
-    }                                                           // ensure consistent records
-
     return CIO_OK;
-}
-
-
-void
-EngngModel :: resolveCorrespondingStepNumber(int &istep, int &iversion, void *obj)
-{
-    //
-    // returns corresponding step number
-    //
-    if ( obj == NULL ) {
-        istep = 1;
-        iversion = 0;
-        return;
-    }
-
-    istep = * ( int * ) obj;
-    iversion = * ( ( ( int * ) obj ) + 1 );
-
-    if ( istep > this->giveNumberOfSteps() ) {
-        istep = this->giveNumberOfSteps();
-    }
-
-    if ( istep <= 0 ) {
-        istep = 1;
-    }
 }
 
 
@@ -1594,7 +1525,7 @@ EngngModel :: giveCurrentMetaStep()
 
 
 int
-EngngModel :: giveContextFile(FILE **contextFile, int tStepNumber, int stepVersion, ContextFileMode cmode, int errLevel)
+EngngModel :: giveContextFile(std :: unique_ptr< DataStream > &contextFile, int tStepNumber, int stepVersion, ContextFileMode cmode, int errLevel)
 //
 //
 // assigns context file of given step number to stream
@@ -1606,42 +1537,16 @@ EngngModel :: giveContextFile(FILE **contextFile, int tStepNumber, int stepVersi
     sprintf(fext, ".%d.%d.osf", tStepNumber, stepVersion);
     fname += fext;
 
-    if ( cmode ==  contextMode_read ) {
-        * contextFile = fopen(fname.c_str(), "rb"); // open for reading
-    } else {
-        * contextFile = fopen(fname.c_str(), "wb"); // open for writing,
+    FileDataStream *file = new FileDataStream(fname.c_str(), cmode == contextMode_write);
+
+    if ( errLevel > 0 && !file->fileIsOpen() ) {
+        OOFEM_ERROR("Opening file '%s' failed.", fname.c_str());
     }
 
-    //  rewind (*contextFile); // seek the beginning
-    // // overwrite if exist
-    // else *contextFile = fopen(fname,"r+"); // open for reading and writing
-
-    if ( ( * contextFile == NULL ) && errLevel > 0 ) {
-        OOFEM_ERROR("can't open %s", fname.c_str());
-    }
-
-    return 1;
+    contextFile = std :: unique_ptr< DataStream >( file );
+    return file->fileIsOpen();
 }
 
-bool
-EngngModel :: testContextFile(int tStepNumber, int stepVersion)
-{
-    std :: string fname = this->coreOutputFileName;
-    char fext [ 100 ];
-    sprintf(fext, ".%d.%d.osf", tStepNumber, stepVersion);
-    fname.append(fext);
-
-#ifdef HAVE_ACCESS
-    return access(fname.c_str(), R_OK) == 0;
-
-#elif _MSC_VER
-    return _access(fname.c_str(), 4) == 0;
-
-#else
-    return true;
-
-#endif
-}
 
 DataReader *
 EngngModel :: GiveDomainDataReader(int domainNum, int domainSerNum, ContextFileMode cmode)

@@ -69,27 +69,22 @@ MPSMaterialStatus :: updateYourself(TimeStep *tStep)
 }
 
 contextIOResultType
-MPSMaterialStatus :: saveContext(DataStream *stream, ContextMode mode, void *obj)
+MPSMaterialStatus :: saveContext(DataStream &stream, ContextMode mode)
 //
 // saves full information stored in this Status
 //
 {
     contextIOResultType iores;
 
-    if ( stream == NULL ) {
-        OOFEM_ERROR("can't write into NULL stream");
-    }
-
-    if ( ( iores = KelvinChainSolidMaterialStatus :: saveContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = KelvinChainSolidMaterialStatus :: saveContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
-
-    if ( !stream->write(& equivalentTime, 1) ) { // write equivalent time
+    if ( !stream.write(& equivalentTime, 1) ) { // write equivalent time
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->write(& flowTermViscosity, 1) ) { // write viscosity of the aging dashpot
+    if ( !stream.write(& flowTermViscosity, 1) ) { // write viscosity of the aging dashpot
         THROW_CIOERR(CIO_IOERR);
     }
 
@@ -97,21 +92,21 @@ MPSMaterialStatus :: saveContext(DataStream *stream, ContextMode mode, void *obj
 }
 
 contextIOResultType
-MPSMaterialStatus :: restoreContext(DataStream *stream, ContextMode mode, void *obj)
+MPSMaterialStatus :: restoreContext(DataStream &stream, ContextMode mode)
 //
 // restore the state variables from a stream
 //
 {
     contextIOResultType iores;
-    if ( ( iores = KelvinChainSolidMaterialStatus :: restoreContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = KelvinChainSolidMaterialStatus :: restoreContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
-    if ( !stream->read(& equivalentTime, 1) ) { // restore equivalentTime
+    if ( !stream.read(& equivalentTime, 1) ) { // restore equivalentTime
         return CIO_IOERR;
     }
 
-    if ( !stream->read(& flowTermViscosity, 1) ) {  // restore equivalentTime
+    if ( !stream.read(& flowTermViscosity, 1) ) {  // restore equivalentTime
         return CIO_IOERR;
     }
 

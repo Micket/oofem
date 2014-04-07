@@ -537,7 +537,7 @@ MisesMatNlStatus :: updateYourself(TimeStep *tStep)
 
 
 contextIOResultType
-MisesMatNlStatus :: saveContext(DataStream *stream, ContextMode mode, void *obj)
+MisesMatNlStatus :: saveContext(DataStream &stream, ContextMode mode)
 //
 // saves full information stored in this Status
 // no temp variables stored
@@ -545,29 +545,29 @@ MisesMatNlStatus :: saveContext(DataStream *stream, ContextMode mode, void *obj)
 {
     contextIOResultType iores;
     // save parent class status
-    if ( ( iores = MisesMatStatus :: saveContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = MisesMatStatus :: saveContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
-    //if (!stream->write(&localEquivalentStrainForAverage,1)) THROW_CIOERR(CIO_IOERR);
+    //if (!stream.write(&localEquivalentStrainForAverage,1)) THROW_CIOERR(CIO_IOERR);
     return CIO_OK;
 }
 
 
 contextIOResultType
-MisesMatNlStatus :: restoreContext(DataStream *stream, ContextMode mode, void *obj)
+MisesMatNlStatus :: restoreContext(DataStream &stream, ContextMode mode)
 //
 // restores full information stored in stream to this Status
 //
 {
     contextIOResultType iores;
     // read parent class status
-    if ( ( iores = MisesMatStatus :: restoreContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = MisesMatStatus :: restoreContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
     // read raw data
-    //if (!stream->read (&localEquivalentStrainForAverage,1)) THROW_CIOERR(CIO_IOERR);
+    //if (!stream.read (&localEquivalentStrainForAverage,1)) THROW_CIOERR(CIO_IOERR);
 
     return CIO_OK;
 }

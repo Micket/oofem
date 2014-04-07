@@ -296,17 +296,17 @@ CebFipSlip90MaterialStatus :: updateYourself(TimeStep *tStep)
 
 
 contextIOResultType
-CebFipSlip90MaterialStatus :: saveContext(DataStream *stream, ContextMode mode, void *obj)
+CebFipSlip90MaterialStatus :: saveContext(DataStream &stream, ContextMode mode)
 {
     contextIOResultType iores;
 
     // save parent class status
-    if ( ( iores = StructuralMaterialStatus :: saveContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = StructuralMaterialStatus :: saveContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
     // write a raw data
-    if ( !stream->write(& kappa, 1) ) {
+    if ( !stream.write(& kappa, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
@@ -315,17 +315,17 @@ CebFipSlip90MaterialStatus :: saveContext(DataStream *stream, ContextMode mode, 
 
 
 contextIOResultType
-CebFipSlip90MaterialStatus :: restoreContext(DataStream *stream, ContextMode mode, void *obj)
+CebFipSlip90MaterialStatus :: restoreContext(DataStream &stream, ContextMode mode)
 {
     contextIOResultType iores;
 
     // read parent class status
-    if ( ( iores = StructuralMaterialStatus :: restoreContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = StructuralMaterialStatus :: restoreContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
     // read raw data
-    if ( !stream->read(& kappa, 1) ) {
+    if ( !stream.read(& kappa, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 

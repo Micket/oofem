@@ -1599,7 +1599,7 @@ Domain :: giveErrorEstimator()
         for ( int i = 1; i <= size; i++ ) {         \
             type *obj = giveMethod(i);              \
             if ( ( mode & CM_Definition ) ) {       \
-                if ( !stream->write( obj->giveInputRecordName() ) ) { \
+                if ( !stream.write( obj->giveInputRecordName() ) ) { \
                     THROW_CIOERR(CIO_IOERR);        \
                 }                                   \
             }                                       \
@@ -1618,7 +1618,7 @@ Domain :: giveErrorEstimator()
             type *obj;                          \
             if ( mode & CM_Definition ) {       \
                 std :: string name;               \
-                if ( !stream->read(name) ) {    \
+                if ( !stream.read(name) ) {    \
                     THROW_CIOERR(CIO_IOERR);    \
                 }                               \
                 obj = creator(name.c_str(), 0, this); \
@@ -1640,7 +1640,7 @@ Domain :: giveErrorEstimator()
 #define DOMAIN_NCOMP 9
 
 contextIOResultType
-Domain :: saveContext(DataStream *stream, ContextMode mode, void *obj)
+Domain :: saveContext(DataStream &stream, ContextMode mode)
 {
     contextIOResultType iores;
     int serNum;
@@ -1648,7 +1648,7 @@ Domain :: saveContext(DataStream *stream, ContextMode mode, void *obj)
 
     // save domain serial number
     serNum = this->giveSerialNumber();
-    if ( !stream->write(& serNum, 1) ) {
+    if ( !stream.write(& serNum, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
@@ -1665,7 +1665,7 @@ Domain :: saveContext(DataStream *stream, ContextMode mode, void *obj)
         ncomp [ 8 ] = this->giveNumberOfRandomFieldGenerators();
 
         // store number of components
-        if ( !stream->write(ncomp, DOMAIN_NCOMP) ) {
+        if ( !stream.write(ncomp, DOMAIN_NCOMP) ) {
             THROW_CIOERR(CIO_IOERR);
         }
 
@@ -1698,7 +1698,7 @@ Domain :: saveContext(DataStream *stream, ContextMode mode, void *obj)
 
 
 contextIOResultType
-Domain :: restoreContext(DataStream *stream, ContextMode mode, void *obj)
+Domain :: restoreContext(DataStream &stream, ContextMode mode)
 {
     contextIOResultType iores;
     int serNum;
@@ -1712,13 +1712,13 @@ Domain :: restoreContext(DataStream *stream, ContextMode mode, void *obj)
     domainUpdated = false;
     serNum = this->giveSerialNumber();
     // restore domain serial number
-    if ( !stream->read(& this->serialNumber, 1) ) {
+    if ( !stream.read(& this->serialNumber, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
     if ( ( mode & CM_Definition ) ) {
         // read number of components
-        if ( !stream->read(ncomp, DOMAIN_NCOMP) ) {
+        if ( !stream.read(ncomp, DOMAIN_NCOMP) ) {
             THROW_CIOERR(CIO_IOERR);
         }
 

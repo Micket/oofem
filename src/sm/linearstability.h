@@ -82,6 +82,8 @@ private:
     /// Numerical method used to solve the static problem.
     SparseLinearSystemNM *nMethodLS;
 
+    int activeVector;
+
 public:
     LinearStability(int i, EngngModel * _master = NULL) : StructuralEngngModel(i, _master),
         loadVector(), displacementVector(), eigVec(), eigVal()
@@ -119,9 +121,10 @@ public:
     // otherwise corresponding eigen vector is considered as displacement vector
     virtual double giveUnknownComponent(ValueModeType type, TimeStep *tStep, Domain *d, Dof *dof);
     virtual IRResultType initializeFrom(InputRecord *ir);
-    virtual contextIOResultType saveContext(DataStream *stream, ContextMode mode, void *obj = NULL);
-    virtual contextIOResultType restoreContext(DataStream *stream, ContextMode mode, void *obj = NULL);
+    virtual contextIOResultType saveContext(DataStream &stream, ContextMode mode);
+    virtual contextIOResultType restoreContext(DataStream &stream, ContextMode mode);
     virtual TimeStep *giveNextStep();
+    virtual void setActiveEigenValue(int i) { activeVector = i; }
 
     virtual NumericalMethod *giveNumericalMethod(MetaStep *mStep);
     SparseLinearSystemNM *giveNumericalMethodForLinStaticProblem(TimeStep *tStep);

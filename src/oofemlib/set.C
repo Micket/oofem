@@ -237,11 +237,11 @@ void Set :: updateLocalElementNumbering(EntityRenumberingFunctor &f)
 }
 
 
-contextIOResultType Set :: saveContext(DataStream *stream, ContextMode mode, void *obj)
+contextIOResultType Set :: saveContext(DataStream &stream, ContextMode mode)
 {
     contextIOResultType iores;
 
-    if ( ( iores = FEMComponent :: saveContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = FEMComponent :: saveContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
@@ -263,11 +263,11 @@ contextIOResultType Set :: saveContext(DataStream *stream, ContextMode mode, voi
     return CIO_OK;
 }
 
-contextIOResultType Set :: restoreContext(DataStream *stream, ContextMode mode, void *obj)
+contextIOResultType Set :: restoreContext(DataStream &stream, ContextMode mode)
 {
     contextIOResultType iores;
 
-    if ( ( iores = FEMComponent :: restoreContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = FEMComponent :: restoreContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 

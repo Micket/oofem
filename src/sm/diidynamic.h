@@ -120,8 +120,8 @@ public:
     void timesMtrx(FloatArray &answer, FloatArray &vec, CharType type, Domain *domain, TimeStep *tStep);
     void assembleLoadVector(FloatArray &_loadVector, Domain *domain, ValueModeType mode, TimeStep *tStep);
     void determineConstants(TimeStep *tStep);
-    contextIOResultType saveContext(DataStream *stream, ContextMode mode, void *obj = NULL);
-    contextIOResultType restoreContext(DataStream *stream, ContextMode mode, void *obj = NULL);
+    contextIOResultType saveContext(DataStream &stream, ContextMode mode);
+    contextIOResultType restoreContext(DataStream &stream, ContextMode mode);
 };
 } // end namespace oofem
 #endif // diidynamic_h

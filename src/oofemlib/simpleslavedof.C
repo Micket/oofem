@@ -155,14 +155,14 @@ SimpleSlaveDof :: giveBcValue(ValueModeType mode, TimeStep *tStep)
 }
 
 
-contextIOResultType SimpleSlaveDof :: saveContext(DataStream *stream, ContextMode mode, void *obj)
+contextIOResultType SimpleSlaveDof :: saveContext(DataStream &stream, ContextMode mode)
 //
 // saves full node context (saves state variables, that completely describe
 // current state)
 //
 {
     contextIOResultType iores;
-    if ( ( iores = Dof :: saveContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = Dof :: saveContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
@@ -170,17 +170,17 @@ contextIOResultType SimpleSlaveDof :: saveContext(DataStream *stream, ContextMod
 #ifdef __PARALLEL_MODE
         if ( mode & CM_DefinitionGlobal ) {
             int _masterGlobNum = dofManager->giveDomain()->giveDofManager(masterDofMngr)->giveGlobalNumber();
-            if ( !stream->write(& _masterGlobNum, 1) ) {
+            if ( !stream.write(& _masterGlobNum, 1) ) {
                 THROW_CIOERR(CIO_IOERR);
             }
         } else {
-            if ( !stream->write(& masterDofMngr, 1) ) {
+            if ( !stream.write(& masterDofMngr, 1) ) {
                 THROW_CIOERR(CIO_IOERR);
             }
         }
 
 #else
-        if ( !stream->write(& masterDofMngr, 1) ) {
+        if ( !stream.write(& masterDofMngr, 1) ) {
             THROW_CIOERR(CIO_IOERR);
         }
 
@@ -191,7 +191,7 @@ contextIOResultType SimpleSlaveDof :: saveContext(DataStream *stream, ContextMod
 }
 
 
-contextIOResultType SimpleSlaveDof :: restoreContext(DataStream *stream, ContextMode mode, void *obj)
+contextIOResultType SimpleSlaveDof :: restoreContext(DataStream &stream, ContextMode mode)
 //
 // restores full node context (saves state variables, that completely describe
 // current state)
@@ -199,12 +199,12 @@ contextIOResultType SimpleSlaveDof :: restoreContext(DataStream *stream, Context
 {
     contextIOResultType iores;
 
-    if ( ( iores = Dof :: restoreContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = Dof :: restoreContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
     if ( mode & CM_Definition ) {
-        if ( !stream->read(& masterDofMngr, 1) ) {
+        if ( !stream.read(& masterDofMngr, 1) ) {
             THROW_CIOERR(CIO_IOERR);
         }
     }

@@ -269,13 +269,13 @@ int ActiveDof :: giveIcId() { return 0; }
 InitialCondition *ActiveDof :: giveIc() { return NULL; }
 
 
-contextIOResultType ActiveDof :: saveContext(DataStream *stream, ContextMode mode, void *obj)
+contextIOResultType ActiveDof :: saveContext(DataStream &stream, ContextMode mode)
 {
     // Nothing here since the boundary condition deals with all the values.
     return CIO_OK;
 }
 
-contextIOResultType ActiveDof :: restoreContext(DataStream *stream, ContextMode mode, void *obj)
+contextIOResultType ActiveDof :: restoreContext(DataStream &stream, ContextMode mode)
 {
     return CIO_OK;
 }

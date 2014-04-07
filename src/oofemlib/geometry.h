@@ -133,7 +133,7 @@ public:
      * @return contextIOResultType.
      * @exception ContextIOERR If error encountered.
      */
-    virtual contextIOResultType saveContext(DataStream *stream, ContextMode mode, void *obj = NULL) { return CIO_OK; }
+    virtual contextIOResultType saveContext(DataStream &stream, ContextMode mode) { return CIO_OK; }
     /**
      * Restores the state of receiver from output stream.
      * @param stream Context file.
@@ -142,7 +142,7 @@ public:
      * @return contextIOResultType.
      * @exception ContextIOERR exception if error encountered.
      */
-    virtual contextIOResultType restoreContext(DataStream *stream, ContextMode mode, void *obj = NULL) { return CIO_OK; }
+    virtual contextIOResultType restoreContext(DataStream &stream, ContextMode mode) { return CIO_OK; }
 
 #ifdef __OOFEG
     virtual void draw(oofegGraphicContext &gc) { }

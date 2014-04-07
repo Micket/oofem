@@ -54,6 +54,8 @@ NewtonianFluidMaterial :: initializeFrom(InputRecord *ir)
     // key-val dictionary with lot of memory allocations
 
     IR_GIVE_FIELD(ir, viscosity, _IFT_NewtonianFluidMaterial_mu);
+    c = 0.;
+    IR_GIVE_OPTIONAL_FIELD(ir, c, "c");
 
     return IRRT_OK;
 }
@@ -91,6 +93,32 @@ MaterialStatus *
 NewtonianFluidMaterial :: CreateStatus(GaussPoint *gp) const
 {
     return new FluidDynamicMaterialStatus(1, this->giveDomain(), gp);
+}
+
+
+void
+NewtonianFluidMaterial :: computeDeviatoricStressVector(FloatArray &stress_dev, double &epsp_vol, GaussPoint *gp, const FloatArray &eps, double pressure, TimeStep *tStep)
+{
+    if ( gp->giveMaterialMode() == _2dFlow ) {
+        epsp_vol = - pressure * this->c -( eps.at(1) + eps.at(2) );
+    } else {
+        epsp_vol = - pressure * this->c -( eps.at(1) + eps.at(2) + eps.at(3) );
+    }
+
+    this->computeDeviatoricStressVector(stress_dev, gp, eps, tStep);
+}
+
+void
+NewtonianFluidMaterial :: giveStiffnessMatrices(FloatMatrix &dsdd, FloatArray &dsdp, FloatArray &dedd, double &dedp,
+                                       MatResponseMode mode, GaussPoint *gp, TimeStep *tStep)
+{
+    this->giveDeviatoricStiffnessMatrix(dsdd, mode, gp, tStep);
+    int size = dsdd.giveNumberOfRows();
+    dsdp.resize(size);
+    dsdp.zero();
+    dedd.resize(size);
+    dedd.zero();
+    dedp = -this->c;
 }
 
 

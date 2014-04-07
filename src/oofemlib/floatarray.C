@@ -804,7 +804,7 @@ void FloatArray :: copySubVector(const FloatArray &src, int si)
 }
 
 
-contextIOResultType FloatArray :: storeYourself(DataStream *stream, ContextMode mode)
+contextIOResultType FloatArray :: storeYourself(DataStream &stream, ContextMode mode)
 // writes receiver's binary image into stream
 // use id to distinguish some instances
 // return value >0 success
@@ -812,13 +812,13 @@ contextIOResultType FloatArray :: storeYourself(DataStream *stream, ContextMode 
 {
     // write size
     int size = this->giveSize();
-    if ( !stream->write(& size, 1) ) {
+    if ( !stream.write(& size, 1) ) {
         return CIO_IOERR;
     }
 
     // write raw data
     if ( size ) {
-        if ( !stream->write(this->givePointer(), size) ) {
+        if ( !stream.write(this->givePointer(), size) ) {
             return CIO_IOERR;
         }
     }
@@ -827,7 +827,7 @@ contextIOResultType FloatArray :: storeYourself(DataStream *stream, ContextMode 
     return CIO_OK;
 }
 
-contextIOResultType FloatArray :: restoreYourself(DataStream *stream, ContextMode mode)
+contextIOResultType FloatArray :: restoreYourself(DataStream &stream, ContextMode mode)
 // reads receiver from stream
 // warning - overwrites existing data!
 // returns 0 if file i/o error
@@ -835,7 +835,7 @@ contextIOResultType FloatArray :: restoreYourself(DataStream *stream, ContextMod
 {
     // read size
     int size;
-    if ( !stream->read(& size, 1) ) {
+    if ( !stream.read(& size, 1) ) {
         return CIO_IOERR;
     }
 
@@ -843,7 +843,7 @@ contextIOResultType FloatArray :: restoreYourself(DataStream *stream, ContextMod
 
     // read raw data
     if ( size ) {
-        if ( !stream->read(this->givePointer(), size) ) {
+        if ( !stream.read(this->givePointer(), size) ) {
             return CIO_IOERR;
         }
     }

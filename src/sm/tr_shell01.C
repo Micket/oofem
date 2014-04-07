@@ -349,34 +349,34 @@ TR_SHELL01 :: printOutputAt(FILE *file, TimeStep *tStep)
 
 
 contextIOResultType
-TR_SHELL01 :: saveContext(DataStream *stream, ContextMode mode, void *obj)
+TR_SHELL01 :: saveContext(DataStream &stream, ContextMode mode)
 {
     contextIOResultType iores;
-    if ( ( iores =  StructuralElement :: saveContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores =  StructuralElement :: saveContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
-    if ( ( iores =  this->plate->saveContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores =  this->plate->saveContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
-    if ( ( iores = this->membrane->saveContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = this->membrane->saveContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
     return iores;
 }
 
 contextIOResultType
-TR_SHELL01 :: restoreContext(DataStream *stream, ContextMode mode, void *obj)
+TR_SHELL01 :: restoreContext(DataStream &stream, ContextMode mode)
 {
     contextIOResultType iores;
-    if ( ( iores =  StructuralElement :: restoreContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores =  StructuralElement :: restoreContext(stream, mode) ) != CIO_OK ) {
         ;
         THROW_CIOERR(iores);
     }
-    if ( ( iores =   this->plate->restoreContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores =   this->plate->restoreContext(stream, mode) ) != CIO_OK ) {
         ;
         THROW_CIOERR(iores);
     }
-    if ( ( iores =  this->membrane->restoreContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores =  this->membrane->restoreContext(stream, mode) ) != CIO_OK ) {
         ;
         THROW_CIOERR(iores);
     }

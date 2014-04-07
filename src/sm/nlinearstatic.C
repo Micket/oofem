@@ -604,24 +604,12 @@ NonLinearStatic :: printOutputAt(FILE *File, TimeStep *tStep)
 
 
 contextIOResultType
-NonLinearStatic :: saveContext(DataStream *stream, ContextMode mode, void *obj)
+NonLinearStatic :: saveContext(DataStream &stream, ContextMode mode)
 //
 // saves state variable - displacement vector
 //
 {
-    int closeFlag = 0;
     contextIOResultType iores;
-    FILE *file = NULL;
-
-    if ( stream == NULL ) {
-        if ( !this->giveContextFile(& file, this->giveCurrentStep()->giveNumber(),
-                                    this->giveCurrentStep()->giveVersion(), contextMode_write) ) {
-            THROW_CIOERR(CIO_IOERR); // override
-        }
-
-        stream = new FileDataStream(file);
-        closeFlag = 1;
-    }
 
     if ( ( iores = EngngModel :: saveContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
@@ -638,15 +626,15 @@ NonLinearStatic :: saveContext(DataStream *stream, ContextMode mode, void *obj)
     }
 
     int _cm = controlMode;
-    if ( !stream->write(& _cm, 1) ) {
+    if ( !stream.write(& _cm, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->write(& loadLevel, 1) ) {
+    if ( !stream.write(& loadLevel, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->write(& cumulatedLoadLevel, 1) ) {
+    if ( !stream.write(& cumulatedLoadLevel, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
@@ -659,40 +647,20 @@ NonLinearStatic :: saveContext(DataStream *stream, ContextMode mode, void *obj)
         THROW_CIOERR(iores);
     }
 
-
-    if ( closeFlag ) {
-        fclose(file);
-        delete stream;
-        stream = NULL;
-    } // ensure consistent records
-
     return CIO_OK;
 }
 
 
 contextIOResultType
-NonLinearStatic :: restoreContext(DataStream *stream, ContextMode mode, void *obj)
+NonLinearStatic :: restoreContext(DataStream &stream, ContextMode mode )
 //
 // restore state variable - displacement vector
 //
 {
-    int closeFlag = 0;
-    int istep, iversion;
     contextIOResultType iores;
-    FILE *file = NULL;
-
-    this->resolveCorrespondingStepNumber(istep, iversion, obj);
-    if ( stream == NULL ) {
-        if ( !this->giveContextFile(& file, istep, iversion, contextMode_read) ) {
-            THROW_CIOERR(CIO_IOERR); // override
-        }
-
-        stream = new FileDataStream(file);
-        closeFlag = 1;
-    }
 
     // save element context
-    if ( ( iores = EngngModel :: restoreContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = EngngModel :: restoreContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
@@ -707,16 +675,16 @@ NonLinearStatic :: restoreContext(DataStream *stream, ContextMode mode, void *ob
     }
 
     int _cm;
-    if ( !stream->read(& _cm, 1) ) {
+    if ( !stream.read(& _cm, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
     controlMode = ( NonLinearStatic_controlType ) _cm;
-    if ( !stream->read(& loadLevel, 1) ) {
+    if ( !stream.read(& loadLevel, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->read(& cumulatedLoadLevel, 1) ) {
+    if ( !stream.read(& cumulatedLoadLevel, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
@@ -729,12 +697,6 @@ NonLinearStatic :: restoreContext(DataStream *stream, ContextMode mode, void *ob
     if ( ( iores = initialLoadVectorOfPrescribed.restoreYourself(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
-
-    if ( closeFlag ) {
-        fclose(file);
-        delete stream;
-        stream = NULL;
-    } // ensure consistent records
 
     return CIO_OK;
 }

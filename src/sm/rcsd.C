@@ -566,7 +566,7 @@ RCSDMaterialStatus :: updateYourself(TimeStep *tStep)
 
 
 contextIOResultType
-RCSDMaterialStatus :: saveContext(DataStream *stream, ContextMode mode, void *obj)
+RCSDMaterialStatus :: saveContext(DataStream &stream, ContextMode mode)
 //
 // saves full information stored in this Status
 // no temp variables stored
@@ -575,20 +575,20 @@ RCSDMaterialStatus :: saveContext(DataStream *stream, ContextMode mode, void *ob
     contextIOResultType iores;
 
     // save parent class status
-    if ( ( iores = RCM2MaterialStatus :: saveContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = RCM2MaterialStatus :: saveContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
     // write a raw data
-    if ( !stream->write(& maxEquivStrain, 1) ) {
+    if ( !stream.write(& maxEquivStrain, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->write(& damageCoeff, 1) ) {
+    if ( !stream.write(& damageCoeff, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->write(& mode, 1) ) {
+    if ( !stream.write(& mode, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
@@ -601,7 +601,7 @@ RCSDMaterialStatus :: saveContext(DataStream *stream, ContextMode mode, void *ob
 
 
 contextIOResultType
-RCSDMaterialStatus :: restoreContext(DataStream *stream, ContextMode mode, void *obj)
+RCSDMaterialStatus :: restoreContext(DataStream &stream, ContextMode mode)
 //
 // restores full information stored in stream to this Status
 //
@@ -609,20 +609,20 @@ RCSDMaterialStatus :: restoreContext(DataStream *stream, ContextMode mode, void 
     contextIOResultType iores;
 
     // read parent class status
-    if ( ( iores = RCM2MaterialStatus :: restoreContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = RCM2MaterialStatus :: restoreContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
     // read raw data
-    if ( !stream->read(& maxEquivStrain, 1) ) {
+    if ( !stream.read(& maxEquivStrain, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->read(& damageCoeff, 1) ) {
+    if ( !stream.read(& damageCoeff, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->read(& mode, 1) ) {
+    if ( !stream.read(& mode, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 

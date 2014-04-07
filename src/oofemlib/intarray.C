@@ -238,16 +238,16 @@ void IntArray :: printYourself() const
 }
 
 
-contextIOResultType IntArray :: storeYourself(DataStream *stream, ContextMode mode) const
+contextIOResultType IntArray :: storeYourself(DataStream &stream, ContextMode mode) const
 {
     // write size
     int size = this->giveSize();
-    if ( !stream->write(& size, 1) ) {
+    if ( !stream.write(& size, 1) ) {
         return ( CIO_IOERR );
     }
 
     // write raw data
-    if ( !stream->write(values.data(), this->giveSize()) ) {
+    if ( !stream.write(values.data(), this->giveSize()) ) {
         return ( CIO_IOERR );
     }
 
@@ -255,18 +255,18 @@ contextIOResultType IntArray :: storeYourself(DataStream *stream, ContextMode mo
     return CIO_OK;
 }
 
-contextIOResultType IntArray :: restoreYourself(DataStream *stream, ContextMode mode)
+contextIOResultType IntArray :: restoreYourself(DataStream &stream, ContextMode mode)
 {
     // read size
     int size;
-    if ( !stream->read(& size, 1) ) {
+    if ( !stream.read(& size, 1) ) {
         return ( CIO_IOERR );
     }
 
     values.resize(size);
 
     // read raw data
-    if ( !stream->read(values.data(), size) ) {
+    if ( !stream.read(values.data(), size) ) {
         return ( CIO_IOERR );
     }
 

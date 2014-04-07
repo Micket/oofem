@@ -1391,17 +1391,12 @@ MDMStatus :: MDMStatus(int n, int nsd, int nmplanes, Domain *d, GaussPoint *g) :
 MDMStatus :: ~MDMStatus() { }
 
 contextIOResultType
-MDMStatus :: saveContext(DataStream *stream, ContextMode mode, void *obj)
+MDMStatus :: saveContext(DataStream &stream, ContextMode mode)
 {
-    //if (stream == NULL) StructuralMaterialStatus::_error("saveContex : can't write into NULL stream");
-    if ( stream == NULL ) {
-        OOFEM_ERROR("can't write into NULL stream");
-    }
-
     contextIOResultType iores;
 
     // save parent class status
-    if ( ( iores = StructuralMaterialStatus :: saveContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = StructuralMaterialStatus :: saveContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
@@ -1426,12 +1421,12 @@ MDMStatus :: saveContext(DataStream *stream, ContextMode mode, void *obj)
 
 
 contextIOResultType
-MDMStatus :: restoreContext(DataStream *stream, ContextMode mode, void *obj)
+MDMStatus :: restoreContext(DataStream &stream, ContextMode mode)
 {
     contextIOResultType iores;
 
     // read parent class status
-    if ( ( iores = StructuralMaterialStatus :: restoreContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = StructuralMaterialStatus :: restoreContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 

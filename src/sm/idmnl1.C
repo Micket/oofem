@@ -997,7 +997,7 @@ IDNLMaterialStatus :: updateYourself(TimeStep *tStep)
 
 
 contextIOResultType
-IDNLMaterialStatus :: saveContext(DataStream *stream, ContextMode mode, void *obj)
+IDNLMaterialStatus :: saveContext(DataStream &stream, ContextMode mode)
 //
 // saves full information stored in this Status
 // no temp variables stored
@@ -1005,28 +1005,28 @@ IDNLMaterialStatus :: saveContext(DataStream *stream, ContextMode mode, void *ob
 {
     contextIOResultType iores;
     // save parent class status
-    if ( ( iores = IsotropicDamageMaterial1Status :: saveContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = IsotropicDamageMaterial1Status :: saveContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
-    //if (!stream->write(&localEquivalentStrainForAverage,1)) THROW_CIOERR(CIO_IOERR);
+    //if (!stream.write(&localEquivalentStrainForAverage,1)) THROW_CIOERR(CIO_IOERR);
     return CIO_OK;
 }
 
 contextIOResultType
-IDNLMaterialStatus :: restoreContext(DataStream *stream, ContextMode mode, void *obj)
+IDNLMaterialStatus :: restoreContext(DataStream &stream, ContextMode mode)
 //
 // restores full information stored in stream to this Status
 //
 {
     contextIOResultType iores;
     // read parent class status
-    if ( ( iores = IsotropicDamageMaterial1Status :: restoreContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = IsotropicDamageMaterial1Status :: restoreContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
     // read raw data
-    //if (!stream->read (&localEquivalentStrainForAverage,1)) THROW_CIOERR(CIO_IOERR);
+    //if (!stream.read (&localEquivalentStrainForAverage,1)) THROW_CIOERR(CIO_IOERR);
 
     return CIO_OK;
 }

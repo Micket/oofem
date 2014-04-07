@@ -35,7 +35,6 @@
 #include "datastream.h"
 #include "processcomm.h"
 #include "combuff.h"
-#include "error.h"
 
 namespace oofem
 {
@@ -117,6 +116,22 @@ int FileDataStream :: write(const char *data, unsigned int count)
 int FileDataStream :: write(bool data)
 {
     return ( fwrite(& data, sizeof( bool ), 1, stream) == 1 );
+}
+
+FileDataStream :: FileDataStream(const char *name, bool write)
+{
+    if ( write ) {
+        stream = fopen(name, "wb"); // open for writing,
+    } else {
+        stream = fopen(name, "rb"); // open for reading
+    }
+}
+
+FileDataStream :: ~FileDataStream()
+{
+    if ( stream ) {
+        fclose( stream );
+    }
 }
 
 #ifdef __PARALLEL_MODE

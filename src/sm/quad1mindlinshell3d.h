@@ -43,6 +43,7 @@
 //@{
 #define _IFT_Quad1MindlinShell3D_Name "quad1mindlinshell3d"
 #define _IFT_Quad1MindlinShell3D_ReducedIntegration "reducedintegration"
+#define _IFT_Quad1MindlinShell3D_mitc "mitc" ///< Mixed Interpolation Tensorial Components
 //@}
 
 namespace oofem {

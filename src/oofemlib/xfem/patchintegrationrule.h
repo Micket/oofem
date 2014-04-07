@@ -73,8 +73,8 @@ public:
     // Note: the fact that this function is inherited complicates name change.
     virtual int SetUpPointsOnTriangle(int nPoints, MaterialMode mode);
 
-    virtual contextIOResultType saveContext(DataStream *stream, ContextMode mode, void *obj);
-    virtual contextIOResultType restoreContext(DataStream *stream, ContextMode mode, void *obj);
+    virtual contextIOResultType saveContext(DataStream &stream, ContextMode mode);
+    virtual contextIOResultType restoreContext(DataStream &stream, ContextMode mode);
 };
 } // end namespace oofem
 #endif // patchintegrationrule_h

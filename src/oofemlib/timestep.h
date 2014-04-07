@@ -203,12 +203,12 @@ public:
      * case, obj parameter is always NULL pointer.
      * @exception ContextIOERR If error encountered.
      */
-    contextIOResultType saveContext(DataStream *stream, ContextMode mode, void *obj = NULL);
+    contextIOResultType saveContext(DataStream &stream, ContextMode mode);
     /**
      * Restores the receiver state previously written in stream.
      * @see saveContext member function.
      */
-    contextIOResultType restoreContext(DataStream *stream, ContextMode mode, void *obj = NULL);
+    contextIOResultType restoreContext(DataStream &stream, ContextMode mode);
 
     std :: string errorInfo(const char *func) { return std :: string("TimeStep::") + func; }
 };

@@ -1172,7 +1172,7 @@ TR1_2D_CBS :: printOutputAt(FILE *file, TimeStep *tStep)
 
 
 
-contextIOResultType TR1_2D_CBS :: saveContext(DataStream *stream, ContextMode mode, void *obj)
+contextIOResultType TR1_2D_CBS :: saveContext(DataStream &stream, ContextMode mode)
 //
 // saves full element context (saves state variables, that completely describe
 // current state)
@@ -1180,12 +1180,12 @@ contextIOResultType TR1_2D_CBS :: saveContext(DataStream *stream, ContextMode mo
 {
     contextIOResultType iores;
 
-    if ( ( iores = CBSElement :: saveContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = CBSElement :: saveContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
     //<RESTRICTED_SECTION>
-    if ( ( iores = LEPlicElementInterface :: saveContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = LEPlicElementInterface :: saveContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
@@ -1196,7 +1196,7 @@ contextIOResultType TR1_2D_CBS :: saveContext(DataStream *stream, ContextMode mo
 
 
 
-contextIOResultType TR1_2D_CBS :: restoreContext(DataStream *stream, ContextMode mode, void *obj)
+contextIOResultType TR1_2D_CBS :: restoreContext(DataStream &stream, ContextMode mode)
 //
 // restores full element context (saves state variables, that completely describe
 // current state)
@@ -1204,12 +1204,12 @@ contextIOResultType TR1_2D_CBS :: restoreContext(DataStream *stream, ContextMode
 {
     contextIOResultType iores;
 
-    if ( ( iores = CBSElement :: restoreContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = CBSElement :: restoreContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
     //<RESTRICTED_SECTION>
-    if ( ( iores = LEPlicElementInterface :: restoreContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = LEPlicElementInterface :: restoreContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 

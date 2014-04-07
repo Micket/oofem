@@ -549,7 +549,7 @@ RCSDEMaterialStatus :: updateYourself(TimeStep *tStep)
 
 
 contextIOResultType
-RCSDEMaterialStatus :: saveContext(DataStream *stream, ContextMode mode, void *obj)
+RCSDEMaterialStatus :: saveContext(DataStream &stream, ContextMode mode)
 //
 // saves full information stored in this Status
 // no temp variables stored
@@ -558,30 +558,30 @@ RCSDEMaterialStatus :: saveContext(DataStream *stream, ContextMode mode, void *o
     contextIOResultType iores;
 
     // save parent class status
-    if ( ( iores = RCM2MaterialStatus :: saveContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = RCM2MaterialStatus :: saveContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
     // write a raw data
 
-    if ( !stream->write(& maxEquivStrain, 1) ) {
+    if ( !stream.write(& maxEquivStrain, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->write(& damageCoeff, 1) ) {
+    if ( !stream.write(& damageCoeff, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
     int _mode = rcsdMode;
-    if ( !stream->write(& _mode, 1) ) {
+    if ( !stream.write(& _mode, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->write(& transitionEps, 1) ) {
+    if ( !stream.write(& transitionEps, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->write(& epsF2, 1) ) {
+    if ( !stream.write(& epsF2, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
@@ -594,7 +594,7 @@ RCSDEMaterialStatus :: saveContext(DataStream *stream, ContextMode mode, void *o
 
 
 contextIOResultType
-RCSDEMaterialStatus :: restoreContext(DataStream *stream, ContextMode mode, void *obj)
+RCSDEMaterialStatus :: restoreContext(DataStream &stream, ContextMode mode)
 //
 // restores full information stored in stream to this Status
 //
@@ -602,30 +602,30 @@ RCSDEMaterialStatus :: restoreContext(DataStream *stream, ContextMode mode, void
     contextIOResultType iores;
 
     // read parent class status
-    if ( ( iores = RCM2MaterialStatus :: restoreContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = RCM2MaterialStatus :: restoreContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
     // read raw data
-    if ( !stream->read(& maxEquivStrain, 1) ) {
+    if ( !stream.read(& maxEquivStrain, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->read(& damageCoeff, 1) ) {
+    if ( !stream.read(& damageCoeff, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
     int _mode;
-    if ( !stream->read(& _mode, 1) ) {
+    if ( !stream.read(& _mode, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
     rcsdMode = ( __rcsdModeType ) _mode;
-    if ( !stream->read(& transitionEps, 1) ) {
+    if ( !stream.read(& transitionEps, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->read(& epsF2, 1) ) {
+    if ( !stream.read(& epsF2, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 

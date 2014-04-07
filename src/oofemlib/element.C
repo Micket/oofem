@@ -861,7 +861,7 @@ Element :: initForNewStep()
 }
 
 
-contextIOResultType Element :: saveContext(DataStream *stream, ContextMode mode, void *obj)
+contextIOResultType Element :: saveContext(DataStream &stream, ContextMode mode)
 //
 // saves full element context (saves state variables, that completely describe
 // current state)
@@ -870,20 +870,20 @@ contextIOResultType Element :: saveContext(DataStream *stream, ContextMode mode,
     contextIOResultType iores;
     int _val;
 
-    if ( ( iores = FEMComponent :: saveContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = FEMComponent :: saveContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
     if ( ( mode & CM_Definition ) ) {
-        if ( !stream->write(& numberOfDofMans, 1) ) {
+        if ( !stream.write(& numberOfDofMans, 1) ) {
             THROW_CIOERR(CIO_IOERR);
         }
 
-        if ( !stream->write(& material, 1) ) {
+        if ( !stream.write(& material, 1) ) {
             THROW_CIOERR(CIO_IOERR);
         }
 
-        if ( !stream->write(& crossSection, 1) ) {
+        if ( !stream.write(& crossSection, 1) ) {
             THROW_CIOERR(CIO_IOERR);
         }
 
@@ -919,25 +919,25 @@ contextIOResultType Element :: saveContext(DataStream *stream, ContextMode mode,
             THROW_CIOERR(iores);
         }
 
-        if ( !stream->write(& numberOfIntegrationRules, 1) ) {
+        if ( !stream.write(& numberOfIntegrationRules, 1) ) {
             THROW_CIOERR(CIO_IOERR);
         }
 
         for ( int i = 0; i < numberOfIntegrationRules; i++ ) {
             _val = integrationRulesArray [ i ]->giveIntegrationRuleType();
-            if ( !stream->write(& _val, 1) ) {
+            if ( !stream.write(& _val, 1) ) {
                 THROW_CIOERR(CIO_IOERR);
             }
         }
 
 #ifdef __PARALLEL_MODE
         int _mode;
-        if ( !stream->write(& globalNumber, 1) ) {
+        if ( !stream.write(& globalNumber, 1) ) {
             THROW_CIOERR(CIO_IOERR);
         }
 
         _mode = parallel_mode;
-        if ( !stream->write(& _mode, 1) ) {
+        if ( !stream.write(& _mode, 1) ) {
             THROW_CIOERR(CIO_IOERR);
         }
 
@@ -949,7 +949,7 @@ contextIOResultType Element :: saveContext(DataStream *stream, ContextMode mode,
     }
 
     for ( int i = 0; i < numberOfIntegrationRules; i++ ) {
-        if ( ( iores = integrationRulesArray [ i ]->saveContext(stream, mode, obj) ) != CIO_OK ) {
+        if ( ( iores = integrationRulesArray [ i ]->saveContext(stream, mode) ) != CIO_OK ) {
             THROW_CIOERR(iores);
         }
     }
@@ -958,7 +958,7 @@ contextIOResultType Element :: saveContext(DataStream *stream, ContextMode mode,
 }
 
 
-contextIOResultType Element :: restoreContext(DataStream *stream, ContextMode mode, void *obj)
+contextIOResultType Element :: restoreContext(DataStream &stream, ContextMode mode)
 //
 // restores full element context (saves state variables, that completely describe
 // current state)
@@ -967,20 +967,20 @@ contextIOResultType Element :: restoreContext(DataStream *stream, ContextMode mo
     contextIOResultType iores;
     int _nrules;
 
-    if ( ( iores = FEMComponent :: restoreContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = FEMComponent :: restoreContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
     if ( mode & CM_Definition ) {
-        if ( !stream->read(& numberOfDofMans, 1) ) {
+        if ( !stream.read(& numberOfDofMans, 1) ) {
             THROW_CIOERR(CIO_IOERR);
         }
 
-        if ( !stream->read(& material, 1) ) {
+        if ( !stream.read(& material, 1) ) {
             THROW_CIOERR(CIO_IOERR);
         }
 
-        if ( !stream->read(& crossSection, 1) ) {
+        if ( !stream.read(& crossSection, 1) ) {
             THROW_CIOERR(CIO_IOERR);
         }
 
@@ -996,14 +996,14 @@ contextIOResultType Element :: restoreContext(DataStream *stream, ContextMode mo
             THROW_CIOERR(iores);
         }
 
-        if ( !stream->read(& _nrules, 1) ) {
+        if ( !stream.read(& _nrules, 1) ) {
             THROW_CIOERR(CIO_IOERR);
         }
 
         // restore integration rules
         IntArray dtypes(_nrules);
         for ( int i = 1; i <= _nrules; i++ ) {
-            if ( !stream->read(& dtypes.at(i), 1) ) {
+            if ( !stream.read(& dtypes.at(i), 1) ) {
                 THROW_CIOERR(CIO_IOERR);
             }
         }
@@ -1036,11 +1036,11 @@ contextIOResultType Element :: restoreContext(DataStream *stream, ContextMode mo
 
 #ifdef __PARALLEL_MODE
         int _mode;
-        if ( !stream->read(& globalNumber, 1) ) {
+        if ( !stream.read(& globalNumber, 1) ) {
             THROW_CIOERR(CIO_IOERR);
         }
 
-        if ( !stream->read(& _mode, 1) ) {
+        if ( !stream.read(& _mode, 1) ) {
             THROW_CIOERR(CIO_IOERR);
         }
 
@@ -1054,7 +1054,7 @@ contextIOResultType Element :: restoreContext(DataStream *stream, ContextMode mo
 
 
     for ( int i = 0; i < numberOfIntegrationRules; i++ ) {
-        if ( ( iores = integrationRulesArray [ i ]->restoreContext(stream, mode, this) ) != CIO_OK ) {
+        if ( ( iores = integrationRulesArray [ i ]->restoreContext(stream, mode) ) != CIO_OK ) {
             THROW_CIOERR(iores);
         }
     }

@@ -118,8 +118,8 @@ public:
      */
     void transformTo(StressStrainBaseVector &answer, const FloatMatrix &base, int transpose = 0) const;
 
-    contextIOResultType storeYourself(DataStream *stream, ContextMode mode);
-    contextIOResultType restoreYourself(DataStream *stream, ContextMode mode);
+    contextIOResultType storeYourself(DataStream &stream, ContextMode mode);
+    contextIOResultType restoreYourself(DataStream &stream, ContextMode mode);
 
     /// Returns the volumetric part of the vector.
     double computeVolumetricPart() const;

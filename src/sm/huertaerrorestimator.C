@@ -442,11 +442,17 @@ HuertaErrorEstimator :: estimateError(EE_ErrorMode mode, TimeStep *tStep)
                     //            this means I cannot go in previous adaptive run, because there was a different domain
                     // it would be much cleaner to call restore from engng model
                     while ( tStepNumber < curNumber ) {
-                        try {
-                            model->restoreContext(NULL, CM_State, ( void * ) & tStepNumber);
-                        } catch(ContextIOERR & c) {
-                            c.print();
-                            exit(1);
+                        
+                        std :: unique_ptr< DataStream > stream;
+                        if ( model->giveContextFile(stream, tStepNumber, 0, contextMode_read) ) {
+                            try {
+                                model->restoreContext(*stream, CM_State);
+                            } catch(ContextIOERR & c) {
+                                c.print();
+                                exit(1);
+                            }
+                        } else {
+                            OOFEM_ERROR("Failed to open context file can not restore step %d", tStepNumber);
                         }
 
                         stepsToSkip = 0;
@@ -645,7 +651,7 @@ HuertaErrorEstimator :: initializeFrom(InputRecord *ir)
 
 
 contextIOResultType
-HuertaErrorEstimator :: saveContext(DataStream *stream, ContextMode mode, void *obj)
+HuertaErrorEstimator :: saveContext(DataStream &stream, ContextMode mode)
 {
     contextIOResultType iores;
     TimeStep *tStep = this->domain->giveEngngModel()->giveCurrentStep();
@@ -655,7 +661,7 @@ HuertaErrorEstimator :: saveContext(DataStream *stream, ContextMode mode, void *
     }
 
     // save parent class status
-    if ( ( iores = ErrorEstimator :: saveContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = ErrorEstimator :: saveContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
@@ -664,7 +670,7 @@ HuertaErrorEstimator :: saveContext(DataStream *stream, ContextMode mode, void *
     }
 
     // write a raw data
-    if ( !stream->write(& stateCounter, 1) ) {
+    if ( !stream.write(& stateCounter, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
@@ -673,12 +679,12 @@ HuertaErrorEstimator :: saveContext(DataStream *stream, ContextMode mode, void *
 
 
 contextIOResultType
-HuertaErrorEstimator :: restoreContext(DataStream *stream, ContextMode mode, void *obj)
+HuertaErrorEstimator :: restoreContext(DataStream &stream, ContextMode mode)
 {
     contextIOResultType iores;
 
     // read parent class status
-    if ( ( iores = ErrorEstimator :: restoreContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = ErrorEstimator :: restoreContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
@@ -687,7 +693,7 @@ HuertaErrorEstimator :: restoreContext(DataStream *stream, ContextMode mode, voi
     }
 
     // read raw data
-    if ( !stream->read(& stateCounter, 1) ) {
+    if ( !stream.read(& stateCounter, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 

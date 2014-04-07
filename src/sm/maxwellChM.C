@@ -283,15 +283,11 @@ MaxwellChainMaterialStatus :: initTempStatus()
 }
 
 contextIOResultType
-MaxwellChainMaterialStatus :: saveContext(DataStream *stream, ContextMode mode, void *obj)
+MaxwellChainMaterialStatus :: saveContext(DataStream &stream, ContextMode mode)
 {
     contextIOResultType iores;
 
-    if ( stream == NULL ) {
-        OOFEM_ERROR("can't write into NULL stream");
-    }
-
-    if ( ( iores = RheoChainMaterialStatus :: saveContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = RheoChainMaterialStatus :: saveContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
@@ -300,9 +296,9 @@ MaxwellChainMaterialStatus :: saveContext(DataStream *stream, ContextMode mode, 
 
 
 contextIOResultType
-MaxwellChainMaterialStatus :: restoreContext(DataStream *stream, ContextMode mode, void *obj)
+MaxwellChainMaterialStatus :: restoreContext(DataStream &stream, ContextMode mode)
 {
-    contextIOResultType iores = RheoChainMaterialStatus :: restoreContext(stream, mode, obj);
+    contextIOResultType iores = RheoChainMaterialStatus :: restoreContext(stream, mode);
 
     if ( iores != CIO_OK ) {
         THROW_CIOERR(iores);

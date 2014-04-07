@@ -66,6 +66,7 @@
 #endif
 
 #include <string>
+#include <memory>
 
 ///@name Input fields for general Engineering models.
 //@{
@@ -490,6 +491,8 @@ public:
      * @see Dof::giveUnknown
      */
     virtual double giveUnknownComponent(ValueModeType, TimeStep *, Domain *, Dof *) { return 0.0; }
+    /// Used to determine the active eigen value (only meaningful by some models).
+    virtual void setActiveEigenValue(int i) { }
 
     ///Returns the master engnmodel
     EngngModel *giveMasterEngngModel() { return this->master; }
@@ -626,7 +629,7 @@ public:
      * @return contextIOResultType.
      * @exception ContextIOERR If error encountered.
      */
-    virtual contextIOResultType saveContext(DataStream *stream, ContextMode mode, void *obj = NULL);
+    virtual contextIOResultType saveContext(DataStream &stream, ContextMode mode);
     /**
      * Restores the state of model from output stream. Restores not only the receiver state,
      * but also same function is invoked for all DofManagers and Elements in associated
@@ -644,7 +647,7 @@ public:
      * @return contextIOResultType.
      * @exception ContextIOERR exception if error encountered.
      */
-    virtual contextIOResultType restoreContext(DataStream *stream, ContextMode mode, void *obj = NULL);
+    virtual contextIOResultType restoreContext(DataStream &stream, ContextMode mode);
     /**
      * Updates domain links after the domains of receiver have changed. Used mainly after
      * restoring context - the domains may change and this service is then used
@@ -652,7 +655,6 @@ public:
      * like error estimators, solvers, etc, having domains as attributes.
      */
     virtual void updateDomainLinks();
-    void resolveCorrespondingStepNumber(int &, int &, void *obj);
     /// Returns current meta step.
     MetaStep *giveCurrentMetaStep();
     /// Returns current time step.
@@ -743,10 +745,8 @@ public:
      * @param cmode Determines the i/o mode of context file.
      * @param errLevel Determines the amount of warning messages if errors are encountered, level 0 no warnings reported.
      */
-    int giveContextFile(FILE **contextFile, int tStepNumber, int stepVersion,
+    int giveContextFile(std :: unique_ptr< DataStream > &contextFile, int tStepNumber, int stepVersion,
                         ContextFileMode cmode, int errLevel = 1);
-    /** Returns true if context file for given step and version is available */
-    bool testContextFile(int tStepNumber, int stepVersion);
     /**
      * Creates new DataReader for given domain.
      * Returns nonzero on success.

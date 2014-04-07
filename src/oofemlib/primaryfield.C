@@ -223,15 +223,15 @@ PrimaryField :: advanceSolution(TimeStep *tStep)
 
 
 contextIOResultType
-PrimaryField :: saveContext(DataStream *stream, ContextMode mode)
+PrimaryField :: saveContext(DataStream &stream, ContextMode mode)
 {
     contextIOResultType iores(CIO_IOERR);
 
-    if ( !stream->write(& actualStepNumber, 1) ) {
+    if ( !stream.write(& actualStepNumber, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->write(& actualStepIndx, 1) ) {
+    if ( !stream.write(& actualStepIndx, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
@@ -250,7 +250,7 @@ PrimaryField :: saveContext(DataStream *stream, ContextMode mode)
             flag = 0;
         }
 
-        if ( !stream->write(& flag, 1) ) {
+        if ( !stream.write(& flag, 1) ) {
             THROW_CIOERR(CIO_IOERR);
         }
 
@@ -265,15 +265,15 @@ PrimaryField :: saveContext(DataStream *stream, ContextMode mode)
 }
 
 contextIOResultType
-PrimaryField :: restoreContext(DataStream *stream, ContextMode mode)
+PrimaryField :: restoreContext(DataStream &stream, ContextMode mode)
 {
     contextIOResultType iores(CIO_IOERR);
 
-    if ( !stream->read(& actualStepNumber, 1) ) {
+    if ( !stream.read(& actualStepNumber, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->read(& actualStepIndx, 1) ) {
+    if ( !stream.read(& actualStepIndx, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
@@ -286,7 +286,7 @@ PrimaryField :: restoreContext(DataStream *stream, ContextMode mode)
     int flag;
     TimeStep *iStep;
     for ( int i = 0; i <= nHistVectors; i++ ) {
-        if ( !stream->read(& flag, 1) ) {
+        if ( !stream.read(& flag, 1) ) {
             THROW_CIOERR(CIO_IOERR);
         }
 

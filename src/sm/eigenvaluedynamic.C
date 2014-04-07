@@ -114,7 +114,7 @@ double EigenValueDynamic :: giveUnknownComponent(ValueModeType mode, TimeStep *t
 
     switch ( mode ) {
     case VM_Total:  // EigenVector
-        return eigVec.at( eq, ( int ) tStep->giveTargetTime() );
+        return eigVec.at( eq, activeVector );
 
     default:
         OOFEM_ERROR("Unknown is of undefined type for this problem");
@@ -259,24 +259,12 @@ void EigenValueDynamic :: terminate(TimeStep *tStep)
 }
 
 
-contextIOResultType EigenValueDynamic :: saveContext(DataStream *stream, ContextMode mode, void *obj)
+contextIOResultType EigenValueDynamic :: saveContext(DataStream &stream, ContextMode mode)
 //
 // saves state variable - displacement vector
 //
 {
-    int closeFlag = 0;
     contextIOResultType iores;
-    FILE *file = NULL;
-
-    if ( stream == NULL ) {
-        if ( !this->giveContextFile(& file, this->giveCurrentStep()->giveNumber(),
-                                    this->giveCurrentStep()->giveVersion(), contextMode_write) ) {
-            THROW_CIOERR(CIO_IOERR); // override
-        }
-
-        stream = new FileDataStream(file);
-        closeFlag = 1;
-    }
 
     if ( ( iores = EngngModel :: saveContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
@@ -290,90 +278,32 @@ contextIOResultType EigenValueDynamic :: saveContext(DataStream *stream, Context
         THROW_CIOERR(iores);
     }
 
-    if ( closeFlag ) {
-        fclose(file);
-        delete stream;
-        stream = NULL;
-    } // ensure consistent records
-
     return CIO_OK;
 }
 
 
-contextIOResultType EigenValueDynamic :: restoreContext(DataStream *stream, ContextMode mode, void *obj)
+contextIOResultType EigenValueDynamic :: restoreContext(DataStream &stream, ContextMode mode )
 //
 // restore state variable - displacement vector
 //
 {
-    int closeFlag = 0;
-    int activeVector = this->resolveCorrespondingEigenStepNumber(obj);
-    int istep = 1, iversion = 0;
     contextIOResultType iores;
-    FILE *file = NULL;
 
-    if ( restoreFlag == 0 ) { // not restored before
-        if ( stream == NULL ) {
-            if ( !this->giveContextFile(& file, istep, iversion, contextMode_read) ) {
-                THROW_CIOERR(CIO_IOERR); // override
-            }
+    // save element context
 
-            stream = new FileDataStream(file);
-            closeFlag = 1;
-        }
-
-        // save element context
-
-        if ( ( iores = EngngModel :: restoreContext(stream, mode, ( void * ) & istep) ) != CIO_OK ) {
-            THROW_CIOERR(iores);
-        }
-
-        if ( ( iores = eigVal.restoreYourself(stream, mode) ) != CIO_OK ) {
-            THROW_CIOERR(iores);
-        }
-
-        if ( ( iores = eigVec.restoreYourself(stream, mode) ) != CIO_OK ) {
-            THROW_CIOERR(iores);
-        }
-
-        if ( closeFlag ) {
-            fclose(file);
-            delete stream;
-            stream = NULL;
-        } // ensure consistent records
+    if ( ( iores = EngngModel :: restoreContext(stream, mode) ) != CIO_OK ) {
+        THROW_CIOERR(iores);
     }
 
-    if ( activeVector > numberOfRequiredEigenValues ) {
-        activeVector = numberOfRequiredEigenValues;
+    if ( ( iores = eigVal.restoreYourself(stream, mode) ) != CIO_OK ) {
+        THROW_CIOERR(iores);
     }
 
-    OOFEM_LOG_INFO( "Restoring - corresponding index is %d, EigenValue is %f\n", activeVector, eigVal.at(activeVector) );
-    this->giveCurrentStep()->setTime( ( double ) activeVector );
-    this->restoreFlag = 1;
+    if ( ( iores = eigVec.restoreYourself(stream, mode) ) != CIO_OK ) {
+        THROW_CIOERR(iores);
+    }
 
     return CIO_OK;
-}
-
-
-int EigenValueDynamic :: resolveCorrespondingEigenStepNumber(void *obj)
-{
-    //
-    // returns corresponding eigen step number
-    //
-    if ( obj == NULL ) {
-        return 1;
-    }
-
-    int *istep = ( int * ) obj;
-
-    if ( * istep > numberOfRequiredEigenValues ) {
-        return numberOfRequiredEigenValues;
-    }
-
-    if ( * istep <= 0 ) {
-        return 1;
-    }
-
-    return * istep;
 }
 
 

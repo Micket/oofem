@@ -146,7 +146,7 @@ Material :: printYourself()
 //
 
 contextIOResultType
-Material :: saveIPContext(DataStream *stream, ContextMode mode, GaussPoint *gp)
+Material :: saveIPContext(DataStream &stream, ContextMode mode, GaussPoint *gp)
 //
 // saves full material status (saves state variables, that completely describe
 // current state) stored in gp->matstatusDict with key = this->giveNumber()
@@ -168,7 +168,7 @@ Material :: saveIPContext(DataStream *stream, ContextMode mode, GaussPoint *gp)
     MaterialStatus *status =  this->giveStatus(gp);
 
     if ( status ) {
-        if ( ( iores = status->saveContext(stream, mode, gp) ) != CIO_OK ) {
+        if ( ( iores = status->saveContext(stream, mode) ) != CIO_OK ) {
             THROW_CIOERR(iores);
         }
     }
@@ -177,7 +177,7 @@ Material :: saveIPContext(DataStream *stream, ContextMode mode, GaussPoint *gp)
 }
 
 contextIOResultType
-Material :: restoreIPContext(DataStream *stream, ContextMode mode, GaussPoint *gp)
+Material :: restoreIPContext(DataStream &stream, ContextMode mode, GaussPoint *gp)
 //
 // restores full material status (saves state variables, that completely describe
 // current state) stored in gp->matstatusDict with key = this->giveNumber()
@@ -195,9 +195,9 @@ Material :: restoreIPContext(DataStream *stream, ContextMode mode, GaussPoint *g
     }
 
     // read raw data - context
-    MaterialStatus *status =  this->giveStatus(gp);
+    MaterialStatus *status = this->giveStatus(gp);
     if ( status ) {
-        if ( ( iores = status->restoreContext(stream, mode, gp) ) != CIO_OK ) {
+        if ( ( iores = status->restoreContext(stream, mode) ) != CIO_OK ) {
             THROW_CIOERR(iores);
         }
     }

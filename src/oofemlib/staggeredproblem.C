@@ -416,11 +416,11 @@ StaggeredProblem :: printOutputAt(FILE *File, TimeStep *tStep)
 
 
 contextIOResultType
-StaggeredProblem :: saveContext(DataStream *stream, ContextMode mode, void *obj)
+StaggeredProblem :: saveContext(DataStream &stream, ContextMode mode)
 {
-    EngngModel :: saveContext(stream, mode, obj);
+    EngngModel :: saveContext(stream, mode);
     for ( int i = 1; i <= nModels; i++ ) {
-        this->giveSlaveProblem(i)->saveContext(stream, mode, obj);
+        this->giveSlaveProblem(i)->saveContext(stream, mode);
     }
 
     return CIO_OK;
@@ -428,11 +428,11 @@ StaggeredProblem :: saveContext(DataStream *stream, ContextMode mode, void *obj)
 
 
 contextIOResultType
-StaggeredProblem :: restoreContext(DataStream *stream, ContextMode mode, void *obj)
+StaggeredProblem :: restoreContext(DataStream &stream, ContextMode mode )
 {
-    EngngModel :: restoreContext(stream, mode, obj);
+    EngngModel :: restoreContext(stream, mode);
     for ( int i = 1; i <= nModels; i++ ) {
-        this->giveSlaveProblem(i)->restoreContext(stream, mode, obj);
+        this->giveSlaveProblem(i)->restoreContext(stream, mode);
     }
 
     return CIO_OK;

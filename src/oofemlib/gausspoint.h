@@ -222,34 +222,6 @@ public:
      */
     virtual void updateYourself(TimeStep *tStep);
 
-    // store & restore context functions
-    /*
-     * Stores receiver state to output stream, including associated material status.
-     * Warning: Slaves are not saved, they must be saved by corresponding
-     * cross section or material model, which creates these slaves.
-     * This is because they may have special weights and coordinates,
-     * and these are not saved into context file, because they remain the same
-     * during whole solution (only variables which vary are stored into context).
-     * Note: does not invoke FEMComponents saveContext, since this writes only
-     * class id header, but typically due to large number of IPs,
-     * this is avoided.
-     * @exception throws an ContextIOERR exception if error encountered.
-     */
-    //contextIOResultType saveContext (FILE* stream, void *obj = NULL);
-    /*
-     * Restores receiver state to output stream, including associated material status.
-     * Warning: Slaves are not restored, they must be restored by corresponding
-     * cross section or material model, which creates these slaves.
-     * This is because they may have special weights and coordinates,
-     * and these are not saved into context file, because they remain the same
-     * during whole solution (only variables which vary are stored into context).
-     * Note: does not invoke FEMComponents restoreContext, since this writes only
-     * class id header, but typically due to large number of IPs,
-     * this is avoided.
-     * @exception throws an ContextIOERR exception if error encountered.
-     */
-    //contextIOResultType restoreContext(FILE* stream, void *obj = NULL);
-
     /// Returns class name of the receiver.
     virtual const char *giveClassName() const { return "GaussPoint"; }
     /// Initializes receiver according to object description stored in input record.

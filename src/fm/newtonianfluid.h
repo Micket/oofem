@@ -57,6 +57,7 @@ class NewtonianFluidMaterial : public FluidDynamicMaterial
 {
 protected:
     double viscosity;
+    double c;
 
 public:
     /**
@@ -69,7 +70,8 @@ public:
     virtual ~NewtonianFluidMaterial() { }
 
     virtual double giveEffectiveViscosity(GaussPoint *gp, TimeStep *tStep);
-
+    virtual void computeDeviatoricStressVector(FloatArray &stress_dev, double &epsp_vol, GaussPoint *gp, const FloatArray &eps, double pressure, TimeStep *tStep);
+    virtual void giveStiffnessMatrices(FloatMatrix &dsdd, FloatArray &dsdp, FloatArray &dedd, double &dedp, MatResponseMode mode, GaussPoint *gp, TimeStep *tStep);
     virtual void computeDeviatoricStressVector(FloatArray &answer, GaussPoint *gp, const FloatArray &eps, TimeStep *tStep);
     virtual void giveDeviatoricStiffnessMatrix(FloatMatrix &answer, MatResponseMode, GaussPoint *gp, TimeStep *tStep);
 

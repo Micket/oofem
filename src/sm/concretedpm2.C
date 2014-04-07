@@ -254,12 +254,12 @@ ConcreteDPM2Status :: printOutputAt(FILE *file, TimeStep *tStep)
 }
 
 contextIOResultType
-ConcreteDPM2Status :: saveContext(DataStream *stream, ContextMode mode, void *obj)
+ConcreteDPM2Status :: saveContext(DataStream &stream, ContextMode mode)
 {
     contextIOResultType iores;
 
     // save parent class status
-    if ( ( iores = StructuralMaterialStatus :: saveContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = StructuralMaterialStatus :: saveContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
@@ -269,59 +269,59 @@ ConcreteDPM2Status :: saveContext(DataStream *stream, ContextMode mode, void *ob
         THROW_CIOERR(iores);
     }
 
-    if ( !stream->write(& kappaP, 1) ) {
+    if ( !stream.write(& kappaP, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->write(& equivStrain, 1) ) {
+    if ( !stream.write(& equivStrain, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->write(& equivStrainTension, 1) ) {
+    if ( !stream.write(& equivStrainTension, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->write(& equivStrainCompression, 1) ) {
+    if ( !stream.write(& equivStrainCompression, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->write(& kappaDTensionOne, 1) ) {
+    if ( !stream.write(& kappaDTensionOne, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->write(& kappaDCompressionOne, 1) ) {
+    if ( !stream.write(& kappaDCompressionOne, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->write(& kappaDTensionTwo, 1) ) {
+    if ( !stream.write(& kappaDTensionTwo, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->write(& kappaDCompressionTwo, 1) ) {
+    if ( !stream.write(& kappaDCompressionTwo, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->write(& kappaDTension, 1) ) {
+    if ( !stream.write(& kappaDTension, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->write(& kappaDCompression, 1) ) {
+    if ( !stream.write(& kappaDCompression, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->write(& damageTension, 1) ) {
+    if ( !stream.write(& damageTension, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->write(& damageCompression, 1) ) {
+    if ( !stream.write(& damageCompression, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->write(& state_flag, 1) ) {
+    if ( !stream.write(& state_flag, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->write(& le, 1) ) {
+    if ( !stream.write(& le, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
@@ -330,12 +330,12 @@ ConcreteDPM2Status :: saveContext(DataStream *stream, ContextMode mode, void *ob
 
 
 contextIOResultType
-ConcreteDPM2Status :: restoreContext(DataStream *stream, ContextMode mode, void *obj)
+ConcreteDPM2Status :: restoreContext(DataStream &stream, ContextMode mode)
 {
     contextIOResultType iores;
 
     // read parent class status
-    if ( ( iores = StructuralMaterialStatus :: restoreContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = StructuralMaterialStatus :: restoreContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
@@ -344,59 +344,59 @@ ConcreteDPM2Status :: restoreContext(DataStream *stream, ContextMode mode, void 
         THROW_CIOERR(iores);
     }
 
-    if ( !stream->read(& kappaP, 1) ) {
+    if ( !stream.read(& kappaP, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->read(& equivStrain, 1) ) {
+    if ( !stream.read(& equivStrain, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->read(& equivStrainTension, 1) ) {
+    if ( !stream.read(& equivStrainTension, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->read(& equivStrainCompression, 1) ) {
+    if ( !stream.read(& equivStrainCompression, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->read(& kappaDTensionOne, 1) ) {
+    if ( !stream.read(& kappaDTensionOne, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->read(& kappaDCompressionOne, 1) ) {
+    if ( !stream.read(& kappaDCompressionOne, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->read(& kappaDTensionTwo, 1) ) {
+    if ( !stream.read(& kappaDTensionTwo, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->read(& kappaDCompressionTwo, 1) ) {
+    if ( !stream.read(& kappaDCompressionTwo, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->read(& kappaDTension, 1) ) {
+    if ( !stream.read(& kappaDTension, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->read(& kappaDCompression, 1) ) {
+    if ( !stream.read(& kappaDCompression, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->read(& damageTension, 1) ) {
+    if ( !stream.read(& damageTension, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->read(& damageCompression, 1) ) {
+    if ( !stream.read(& damageCompression, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->read(& state_flag, 1) ) {
+    if ( !stream.read(& state_flag, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->read(& le, 1) ) {
+    if ( !stream.read(& le, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 

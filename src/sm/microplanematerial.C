@@ -128,16 +128,12 @@ MicroplaneMaterial :: initTempStatus(GaussPoint *gp)
 }
 
 contextIOResultType
-MicroplaneMaterial :: saveIPContext(DataStream *stream, ContextMode mode, GaussPoint *gp)
+MicroplaneMaterial :: saveIPContext(DataStream &stream, ContextMode mode, GaussPoint *gp)
 {
     contextIOResultType iores;
     int mPlaneIndex;
     Microplane *mPlane;
     IntegrationPointStatus *status;
-
-    if ( stream == NULL ) {
-        OOFEM_ERROR("can't write into NULL stream");
-    }
 
     if ( gp == NULL ) {
         THROW_CIOERR(CIO_BADOBJ);
@@ -153,7 +149,7 @@ MicroplaneMaterial :: saveIPContext(DataStream *stream, ContextMode mode, GaussP
         mPlane = this->giveMicroplane(mPlaneIndex, gp);
         status =  this->giveMicroplaneStatus(mPlane);
         if ( status ) {
-            if ( ( iores = status->saveContext(stream, mode, gp) ) != CIO_OK ) {
+            if ( ( iores = status->saveContext(stream, mode) ) != CIO_OK ) {
                 THROW_CIOERR(iores);
             }
         }
@@ -163,7 +159,7 @@ MicroplaneMaterial :: saveIPContext(DataStream *stream, ContextMode mode, GaussP
 }
 
 contextIOResultType
-MicroplaneMaterial :: restoreIPContext(DataStream *stream, ContextMode mode, GaussPoint *gp)
+MicroplaneMaterial :: restoreIPContext(DataStream &stream, ContextMode mode, GaussPoint *gp)
 {
     contextIOResultType iores;
     int mPlaneIndex;
@@ -185,7 +181,7 @@ MicroplaneMaterial :: restoreIPContext(DataStream *stream, ContextMode mode, Gau
         mPlane = this->giveMicroplane(mPlaneIndex, gp);
         status =  this->giveMicroplaneStatus(mPlane);
         if ( status ) {
-            if ( ( iores = status->restoreContext(stream, mode, gp) ) != CIO_OK ) {
+            if ( ( iores = status->restoreContext(stream, mode) ) != CIO_OK ) {
                 THROW_CIOERR(iores);
             }
         }

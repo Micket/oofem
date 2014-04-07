@@ -230,15 +230,15 @@ TrabBoneNLEmbedStatus :: updateYourself(TimeStep *tStep)
 }
 
 contextIOResultType
-TrabBoneNLEmbedStatus :: saveContext(DataStream *stream, ContextMode mode,  void *obj)
+TrabBoneNLEmbedStatus :: saveContext(DataStream &stream, ContextMode mode)
 {
-    return TrabBoneEmbedStatus :: saveContext(stream, mode, obj);
+    return TrabBoneEmbedStatus :: saveContext(stream, mode);
 }
 
 contextIOResultType
-TrabBoneNLEmbedStatus :: restoreContext(DataStream *stream, ContextMode mode,  void *obj)
+TrabBoneNLEmbedStatus :: restoreContext(DataStream &stream, ContextMode mode)
 {
-    return TrabBoneEmbedStatus :: restoreContext(stream, mode, obj);
+    return TrabBoneEmbedStatus :: restoreContext(stream, mode);
 }
 
 

@@ -265,11 +265,11 @@ KelvinChainSolidMaterialStatus :: initTempStatus()
 }
 
 contextIOResultType
-KelvinChainSolidMaterialStatus :: saveContext(DataStream *stream, ContextMode mode, void *obj)
+KelvinChainSolidMaterialStatus :: saveContext(DataStream &stream, ContextMode mode)
 {
     contextIOResultType iores;
 
-    if ( ( iores = RheoChainMaterialStatus :: saveContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = RheoChainMaterialStatus :: saveContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
@@ -278,11 +278,11 @@ KelvinChainSolidMaterialStatus :: saveContext(DataStream *stream, ContextMode mo
 
 
 contextIOResultType
-KelvinChainSolidMaterialStatus :: restoreContext(DataStream *stream, ContextMode mode, void *obj)
+KelvinChainSolidMaterialStatus :: restoreContext(DataStream &stream, ContextMode mode)
 {
     contextIOResultType iores;
 
-    if ( ( iores = RheoChainMaterialStatus :: restoreContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = RheoChainMaterialStatus :: restoreContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 

@@ -1040,10 +1040,10 @@ void CylindricalALM :: convertHPCMap()
 
 
 contextIOResultType
-CylindricalALM :: saveContext(DataStream *stream, ContextMode mode, void *obj)
+CylindricalALM :: saveContext(DataStream &stream, ContextMode mode)
 {
     // write current deltaL
-    if ( !stream->write(& deltaL, 1) ) {
+    if ( !stream.write(& deltaL, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
@@ -1052,10 +1052,10 @@ CylindricalALM :: saveContext(DataStream *stream, ContextMode mode, void *obj)
 
 
 contextIOResultType
-CylindricalALM :: restoreContext(DataStream *stream, ContextMode mode, void *obj)
+CylindricalALM :: restoreContext(DataStream &stream, ContextMode mode)
 {
     // read last deltaL
-    if ( !stream->read(& deltaL, 1) ) {
+    if ( !stream.read(& deltaL, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 

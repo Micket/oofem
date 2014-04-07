@@ -122,12 +122,12 @@ DustMaterialStatus :: printOutputAt(FILE *file, TimeStep *tStep)
 }
 
 contextIOResultType
-DustMaterialStatus :: saveContext(DataStream *stream, ContextMode mode, void *obj)
+DustMaterialStatus :: saveContext(DataStream &stream, ContextMode mode)
 {
     contextIOResultType iores;
 
     // save parent class status
-    if ( ( iores = StructuralMaterialStatus :: saveContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = StructuralMaterialStatus :: saveContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
@@ -136,12 +136,12 @@ DustMaterialStatus :: saveContext(DataStream *stream, ContextMode mode, void *ob
 
 
 contextIOResultType
-DustMaterialStatus :: restoreContext(DataStream *stream, ContextMode mode, void *obj)
+DustMaterialStatus :: restoreContext(DataStream &stream, ContextMode mode)
 {
     contextIOResultType iores;
 
     // read parent class status
-    if ( ( iores = StructuralMaterialStatus :: restoreContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = StructuralMaterialStatus :: restoreContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 

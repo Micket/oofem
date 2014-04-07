@@ -116,7 +116,7 @@ StressStrainBaseVector :: convertFromFullForm(const FloatArray &vector, Material
 
 
 contextIOResultType
-StressStrainBaseVector :: storeYourself(DataStream *stream, ContextMode mode)
+StressStrainBaseVector :: storeYourself(DataStream &stream, ContextMode mode)
 {
     contextIOResultType iores;
     if ( ( iores = FloatArray :: storeYourself(stream, mode) ) != CIO_OK ) {
@@ -124,7 +124,7 @@ StressStrainBaseVector :: storeYourself(DataStream *stream, ContextMode mode)
     }
 
     // write material mode
-    if ( !stream->write(& mode, 1) ) {
+    if ( !stream.write(& mode, 1) ) {
         return CIO_IOERR;
     }
 
@@ -132,7 +132,7 @@ StressStrainBaseVector :: storeYourself(DataStream *stream, ContextMode mode)
 }
 
 contextIOResultType
-StressStrainBaseVector :: restoreYourself(DataStream *stream, ContextMode mode)
+StressStrainBaseVector :: restoreYourself(DataStream &stream, ContextMode mode)
 {
     contextIOResultType iores;
     if ( ( iores = FloatArray :: restoreYourself(stream, mode) ) != CIO_OK ) {
@@ -140,7 +140,7 @@ StressStrainBaseVector :: restoreYourself(DataStream *stream, ContextMode mode)
     }
 
     // read material mode
-    if ( !stream->read(& mode, 1) ) {
+    if ( !stream.read(& mode, 1) ) {
         return CIO_IOERR;
     }
 

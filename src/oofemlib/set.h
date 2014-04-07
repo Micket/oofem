@@ -145,8 +145,8 @@ public:
      */
     void updateLocalElementNumbering(EntityRenumberingFunctor &f);
 
-    virtual contextIOResultType saveContext(DataStream *stream, ContextMode mode, void *obj = NULL);
-    virtual contextIOResultType restoreContext(DataStream *stream, ContextMode mode, void *obj = NULL);
+    virtual contextIOResultType saveContext(DataStream &stream, ContextMode mode);
+    virtual contextIOResultType restoreContext(DataStream &stream, ContextMode mode);
 
     virtual const char *giveClassName() const { return "Set"; }
     virtual const char *giveInputRecordName() const { return _IFT_Set_Name; }

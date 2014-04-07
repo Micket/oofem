@@ -38,6 +38,7 @@
 #include "inputrecord.h"
 #include "datareader.h"
 
+#include <string>
 #include <cstring>
 
 namespace oofem {
@@ -55,7 +56,7 @@ EngngModel *InstanciateProblem(DataReader *dr, problemMode mode, int contextFlag
      * through the whole e-model instanciation
      */
     InputRecord *emodelir = dr->giveInputRecord(DataReader :: IR_emodelRec, 1)->GiveCopy();
-    result = emodelir->giveRecordKeywordField(problemName); ///@todo Make this function robust, it can't be allowed to fail (the record keyword is not a normal field-id)
+    result = emodelir->giveRecordKeywordField(problemName);
     if ( result != IRRT_OK ) {
         emodelir->report_error("", __func__, "", result, __FILE__, __LINE__);
     }
@@ -77,4 +78,20 @@ EngngModel *InstanciateProblem(DataReader *dr, problemMode mode, int contextFlag
 
     return problem;
 }
+
+
+/*
+DataStream *giveDataStream(int istep, int iversion)
+{
+    DataStream &stream;
+    OOFEM_LOG_RELEVANT("Restoring context for time step %d.%d\n", istep, iversion);
+    if ( !this->giveContextFile(stream, istep, iversion, contextMode_read) ) {
+        //THROW_CIOERR(CIO_IOERR);
+    }
+}
+*/
+
+
+
+
 } // end namespace oofem

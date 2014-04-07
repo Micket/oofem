@@ -109,8 +109,8 @@ public:
     virtual void updateYourself(TimeStep *tStep);
     virtual void printOutputAt(FILE *file, TimeStep *tStep);
 
-    virtual contextIOResultType saveContext(DataStream *stream, ContextMode mode, void *obj = NULL);
-    virtual contextIOResultType restoreContext(DataStream *stream, ContextMode mode, void *obj = NULL);
+    virtual contextIOResultType saveContext(DataStream &stream, ContextMode mode);
+    virtual contextIOResultType restoreContext(DataStream &stream, ContextMode mode);
 
     virtual const char *giveClassName() const { return "DustMaterialStatus"; }
 

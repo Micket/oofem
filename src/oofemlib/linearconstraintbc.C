@@ -200,7 +200,7 @@ void LinearConstraintBC :: giveLocationArrays(std :: vector< IntArray > &rows, s
 
 
 contextIOResultType
-LinearConstraintBC :: saveContext(DataStream *stream, ContextMode mode, void *obj)
+LinearConstraintBC :: saveContext(DataStream &stream, ContextMode mode)
 {
     contextIOResultType iores;
     if ( mode & CM_Definition ) {
@@ -216,10 +216,10 @@ LinearConstraintBC :: saveContext(DataStream *stream, ContextMode mode, void *ob
         if ( ( iores = dofs.storeYourself(stream, mode) ) != CIO_OK ) {
             THROW_CIOERR(iores);
         }
-        if ( !stream->write(& rhs, 1) ) {
+        if ( !stream.write(& rhs, 1) ) {
             THROW_CIOERR(CIO_IOERR);
         }
-        if ( !stream->write(& rhsTf, 1) ) {
+        if ( !stream.write(& rhsTf, 1) ) {
             THROW_CIOERR(CIO_IOERR);
         }
         if ( ( iores = lhsType.storeYourself(stream, mode) ) != CIO_OK ) {
@@ -239,7 +239,7 @@ LinearConstraintBC :: saveContext(DataStream *stream, ContextMode mode, void *ob
 
 
 contextIOResultType
-LinearConstraintBC :: restoreContext(DataStream *stream, ContextMode mode, void *obj)
+LinearConstraintBC :: restoreContext(DataStream &stream, ContextMode mode)
 {
     contextIOResultType iores;
     if ( mode & CM_Definition ) {
@@ -255,10 +255,10 @@ LinearConstraintBC :: restoreContext(DataStream *stream, ContextMode mode, void 
         if ( ( iores = dofs.restoreYourself(stream, mode) ) != CIO_OK ) {
             THROW_CIOERR(iores);
         }
-        if ( !stream->read(& rhs, 1) ) {
+        if ( !stream.read(& rhs, 1) ) {
             THROW_CIOERR(CIO_IOERR);
         }
-        if ( !stream->read(& rhsTf, 1) ) {
+        if ( !stream.read(& rhsTf, 1) ) {
             THROW_CIOERR(CIO_IOERR);
         }
         if ( ( iores = lhsType.restoreYourself(stream, mode) ) != CIO_OK ) {

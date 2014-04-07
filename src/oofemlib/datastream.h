@@ -114,13 +114,14 @@ class OOFEM_EXPORT FileDataStream : public DataStream
 private:
     /// FILE pointer of associated stream
     FILE *stream;
+
 public:
-    /// Constructor, takes associated stream pointer as parameter
-    FileDataStream(FILE * s) {
-        stream = s;
-    }
-    /// Destructor (will not close stream!)
-    virtual ~FileDataStream() { }
+    /// Constructor
+    FileDataStream(const char *name, bool write = true);
+    /// Destructor
+    virtual ~FileDataStream();
+
+    bool fileIsOpen() { return stream != NULL; }
 
     virtual int read(int *data, unsigned int count);
     virtual int read(unsigned long *data, unsigned int count);

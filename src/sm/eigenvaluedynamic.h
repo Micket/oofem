@@ -72,7 +72,6 @@ private:
     FloatArray eigVal;
     int numberOfRequiredEigenValues;
     int activeVector;
-    int restoreFlag;
     /// Relative tolerance.
     double rtolv;
     /// Numerical method used to solve the problem.
@@ -102,12 +101,11 @@ public:
 
     virtual double giveUnknownComponent(ValueModeType type, TimeStep *tStep, Domain *d, Dof *dof);
     virtual IRResultType initializeFrom(InputRecord *ir);
-    virtual contextIOResultType saveContext(DataStream *stream, ContextMode mode, void *obj = NULL);
-    virtual contextIOResultType restoreContext(DataStream *stream, ContextMode mode, void *obj = NULL);
+    virtual contextIOResultType saveContext(DataStream &stream, ContextMode mode);
+    virtual contextIOResultType restoreContext(DataStream &stream, ContextMode mode);
     virtual TimeStep *giveNextStep();
     virtual NumericalMethod *giveNumericalMethod(MetaStep *mStep);
-    virtual void setActiveVector(int i) { activeVector = i; }
-    virtual int resolveCorrespondingEigenStepNumber(void *obj);
+    virtual void setActiveEigenValue(int i) { activeVector = i; }
 
 #ifdef __SLEPC_MODULE
     virtual void initParallelContexts();

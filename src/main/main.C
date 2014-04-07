@@ -38,7 +38,7 @@
 
 #include "engngm.h"
 #include "oofemcfg.h"
-
+#include "datastream.h"
 #include "oofemtxtdatareader.h"
 #include "util.h"
 #include "error.h"
@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
     std :: set_new_handler(freeStoreError);   // prevents memory overflow
 #endif
 
-    int adaptiveRestartFlag = 0, restartStepInfo [ 2 ];
+    int adaptiveRestartFlag = 0, restartStep = 0;
     bool parallelFlag = false, renumberFlag = false, debugFlag = false, contextFlag = false, restartFlag = false,
          inputFileFlag = false, outputFileFlag = false, errOutputFileFlag = false;
     std :: stringstream inputFileName, outputFileName, errOutputFileName;
@@ -147,8 +147,7 @@ int main(int argc, char *argv[])
                 if ( i + 1 < argc ) {
                     i++;
                     restartFlag = true;
-                    restartStepInfo [ 0 ] = strtol(argv [ i ], NULL, 10);
-                    restartStepInfo [ 1 ] = 0;
+                    restartStep = strtol(argv [ i ], NULL, 10);
                 }
             } else if ( strcmp(argv [ i ], "-rn") == 0 ) {
                 renumberFlag = true;
@@ -261,16 +260,22 @@ int main(int argc, char *argv[])
     }
 
     if ( restartFlag ) {
-        try {
-            problem->restoreContext(NULL, CM_State, ( void * ) restartStepInfo);
-        } catch(ContextIOERR & c) {
-            c.print();
-            exit(1);
+        std :: unique_ptr< DataStream > stream;
+        if ( problem->giveContextFile(stream, restartStep, 0, contextMode_read) ) {
+            try {
+                problem->restoreContext(*stream, CM_State);
+            } catch(ContextIOERR & c) {
+                c.print();
+                exit(1);
+            }
+        } else {
+            printf("Failed to open context file can not restore step %d.\n", restartStep);
         }
         problem->initStepIncrements();
     } else if ( adaptiveRestartFlag ) {
         problem->initializeAdaptive(adaptiveRestartFlag);
-        problem->saveContext(NULL, CM_State);
+        ///@todo
+        //problem->saveContext(NULL, CM_State);
         // exit (1);
     }
 

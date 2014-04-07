@@ -614,21 +614,9 @@ DIIDynamic :: determineConstants(TimeStep *tStep)
 }
 
 
-contextIOResultType DIIDynamic :: saveContext(DataStream *stream, ContextMode mode, void *obj)
+contextIOResultType DIIDynamic :: saveContext(DataStream &stream, ContextMode mode)
 {
-    int closeFlag = 0;
     contextIOResultType iores;
-    FILE *file = NULL;
-
-    if ( stream == NULL ) {
-        if ( !this->giveContextFile(& file, this->giveCurrentStep()->giveNumber(),
-                                    this->giveCurrentStep()->giveVersion(), contextMode_write) ) {
-            THROW_CIOERR(CIO_IOERR); // Override.
-        }
-
-        stream = new FileDataStream(file);
-        closeFlag = 1;
-    }
 
     if ( ( iores = EngngModel :: saveContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
@@ -654,33 +642,14 @@ contextIOResultType DIIDynamic :: saveContext(DataStream *stream, ContextMode mo
         THROW_CIOERR(iores);
     }
 
-    if ( closeFlag ) {
-        fclose(file);
-        delete stream;
-        stream = NULL;
-    }
-
     return CIO_OK;
 }
 
-contextIOResultType DIIDynamic :: restoreContext(DataStream *stream, ContextMode mode, void *obj)
+contextIOResultType DIIDynamic :: restoreContext(DataStream &stream, ContextMode mode )
 {
-    int closeFlag = 0;
-    int istep, iversion;
     contextIOResultType iores;
-    FILE *file = NULL;
 
-    this->resolveCorrespondingStepNumber(istep, iversion, obj);
-    if ( stream == NULL ) {
-        if ( !this->giveContextFile(& file, istep, iversion, contextMode_read) ) {
-            THROW_CIOERR(CIO_IOERR); // Override.
-        }
-
-        stream = new FileDataStream(file);
-        closeFlag = 1;
-    }
-
-    if ( ( iores = EngngModel :: restoreContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = EngngModel :: restoreContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
@@ -702,12 +671,6 @@ contextIOResultType DIIDynamic :: restoreContext(DataStream *stream, ContextMode
 
     if ( ( iores = previousIncrementOfDisplacement.restoreYourself(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
-    }
-
-    if ( closeFlag ) {
-        fclose(file);
-        delete stream;
-        stream = NULL;
     }
 
     return CIO_OK;

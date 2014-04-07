@@ -194,7 +194,7 @@ PatchIntegrationRule :: SetUpPointsOnTriangle(int nPoints, MaterialMode mode)
 }
 
 contextIOResultType
-PatchIntegrationRule :: saveContext(DataStream *stream, ContextMode mode, void *obj)
+PatchIntegrationRule :: saveContext(DataStream &stream, ContextMode mode)
 {
     // TODO: Implement
 
@@ -206,7 +206,7 @@ PatchIntegrationRule :: saveContext(DataStream *stream, ContextMode mode, void *
     // save parent data
     contextIOResultType iores;
 
-    if ( ( iores = IntegrationRule :: saveContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = IntegrationRule :: saveContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
@@ -215,11 +215,11 @@ PatchIntegrationRule :: saveContext(DataStream *stream, ContextMode mode, void *
      *  if ( this->patch ) {
      *      // store patch type
      *      int _type = this->patch->givePatchType();
-     *      if ( !stream->write(& _type, 1) ) {
+     *      if ( !stream.write(& _type, 1) ) {
      *          THROW_CIOERR(CIO_IOERR);
      *      }
      *
-     *      patch->saveContext(stream, mode, obj);
+     *      patch->saveContext(stream, mode);
      *  } else {
      *      OOFEM_ERROR("can't store NULL patch");
      *  }
@@ -228,7 +228,7 @@ PatchIntegrationRule :: saveContext(DataStream *stream, ContextMode mode, void *
 }
 
 contextIOResultType
-PatchIntegrationRule :: restoreContext(DataStream *stream, ContextMode mode, void *obj)
+PatchIntegrationRule :: restoreContext(DataStream &stream, ContextMode mode)
 {
     // TODO: Implement
 
@@ -239,11 +239,7 @@ PatchIntegrationRule :: restoreContext(DataStream *stream, ContextMode mode, voi
 
     contextIOResultType iores;
 
-    if ( stream == NULL ) {
-        OOFEM_ERROR("can't write into NULL stream");
-    }
-
-    if ( ( iores = IntegrationRule :: restoreContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = IntegrationRule :: restoreContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
@@ -254,14 +250,14 @@ PatchIntegrationRule :: restoreContext(DataStream *stream, ContextMode mode, voi
      *  }
      */
     int _ptype;
-    if ( !stream->read(& _ptype, 1) ) {
+    if ( !stream.read(& _ptype, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
     /*
      *  // create new patch
      *  this->patch = classFactory.createPatch( ( Patch :: PatchType ) _ptype, this->giveElement() );
-     *  this->patch->restoreContext(stream, mode, obj);
+     *  this->patch->restoreContext(stream, mode);
      */
     return CIO_OK;
 }

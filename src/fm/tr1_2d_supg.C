@@ -1986,7 +1986,7 @@ TR1_2D_SUPG :: printOutputAt(FILE *file, TimeStep *tStep)
 
 
 
-contextIOResultType TR1_2D_SUPG :: saveContext(DataStream *stream, ContextMode mode, void *obj)
+contextIOResultType TR1_2D_SUPG :: saveContext(DataStream &stream, ContextMode mode)
 //
 // saves full element context (saves state variables, that completely describe
 // current state)
@@ -1994,11 +1994,11 @@ contextIOResultType TR1_2D_SUPG :: saveContext(DataStream *stream, ContextMode m
 {
     contextIOResultType iores;
 
-    if ( ( iores = SUPGElement :: saveContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = SUPGElement :: saveContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
-    if ( ( iores = LEPlicElementInterface :: saveContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = LEPlicElementInterface :: saveContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
@@ -2007,7 +2007,7 @@ contextIOResultType TR1_2D_SUPG :: saveContext(DataStream *stream, ContextMode m
 
 
 
-contextIOResultType TR1_2D_SUPG :: restoreContext(DataStream *stream, ContextMode mode, void *obj)
+contextIOResultType TR1_2D_SUPG :: restoreContext(DataStream &stream, ContextMode mode)
 //
 // restores full element context (saves state variables, that completely describe
 // current state)
@@ -2015,11 +2015,11 @@ contextIOResultType TR1_2D_SUPG :: restoreContext(DataStream *stream, ContextMod
 {
     contextIOResultType iores;
 
-    if ( ( iores = SUPGElement :: restoreContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = SUPGElement :: restoreContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
-    if ( ( iores = LEPlicElementInterface :: restoreContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = LEPlicElementInterface :: restoreContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 

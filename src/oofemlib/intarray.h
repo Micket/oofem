@@ -322,12 +322,12 @@ public:
      * Stores array to output stream.
      * @see FEMComponent
      */
-    contextIOResultType storeYourself(DataStream *stream, ContextMode mode) const;
+    contextIOResultType storeYourself(DataStream &stream, ContextMode mode) const;
     /**
      * Restores array from image on stream.
      * @see FEMComponent
      */
-    contextIOResultType restoreYourself(DataStream *stream, ContextMode mode);
+    contextIOResultType restoreYourself(DataStream &stream, ContextMode mode);
 
     friend std :: ostream &operator << ( std :: ostream & out, const IntArray & x );
 

@@ -101,8 +101,8 @@ public:
     virtual integrationDomain giveIntegrationDomain() const { return _Line; }
     virtual MaterialMode giveMaterialMode() { return _3dBeam; }
 
-    virtual contextIOResultType saveContext(DataStream *stream, ContextMode mode, void *obj);
-    virtual contextIOResultType restoreContext(DataStream *stream, ContextMode mode, void *obj);
+    virtual contextIOResultType saveContext(DataStream &stream, ContextMode mode);
+    virtual contextIOResultType restoreContext(DataStream &stream, ContextMode mode);
 
 protected:
     // edge load support

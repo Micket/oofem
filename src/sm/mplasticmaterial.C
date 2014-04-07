@@ -1467,7 +1467,7 @@ MPlasticMaterialStatus :: updateYourself(TimeStep *tStep)
 
 
 contextIOResultType
-MPlasticMaterialStatus :: saveContext(DataStream *stream, ContextMode mode, void *obj)
+MPlasticMaterialStatus :: saveContext(DataStream &stream, ContextMode mode)
 //
 // saves full information stored in this Status
 // no temp variables stored
@@ -1476,7 +1476,7 @@ MPlasticMaterialStatus :: saveContext(DataStream *stream, ContextMode mode, void
     contextIOResultType iores;
 
     // save parent class status
-    if ( ( iores = StructuralMaterialStatus :: saveContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = StructuralMaterialStatus :: saveContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
@@ -1489,7 +1489,7 @@ MPlasticMaterialStatus :: saveContext(DataStream *stream, ContextMode mode, void
         THROW_CIOERR(iores);
     }
 
-    if ( !stream->write(& state_flag, 1) ) {
+    if ( !stream.write(& state_flag, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
@@ -1507,7 +1507,7 @@ MPlasticMaterialStatus :: saveContext(DataStream *stream, ContextMode mode, void
 
 
 contextIOResultType
-MPlasticMaterialStatus :: restoreContext(DataStream *stream, ContextMode mode, void *obj)
+MPlasticMaterialStatus :: restoreContext(DataStream &stream, ContextMode mode)
 //
 // restores full information stored in stream to this Status
 //
@@ -1515,7 +1515,7 @@ MPlasticMaterialStatus :: restoreContext(DataStream *stream, ContextMode mode, v
     contextIOResultType iores;
 
     // read parent class status
-    if ( ( iores = StructuralMaterialStatus :: restoreContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = StructuralMaterialStatus :: restoreContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
@@ -1527,7 +1527,7 @@ MPlasticMaterialStatus :: restoreContext(DataStream *stream, ContextMode mode, v
         THROW_CIOERR(iores);
     }
 
-    if ( !stream->read(& state_flag, 1) ) {
+    if ( !stream.read(& state_flag, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 

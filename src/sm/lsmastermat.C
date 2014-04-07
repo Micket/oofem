@@ -534,7 +534,7 @@ LargeStrainMasterMaterialStatus :: updateYourself(TimeStep *tStep)
 // saves full information stored in this status
 // temporary variables are NOT stored
 contextIOResultType
-LargeStrainMasterMaterialStatus :: saveContext(DataStream *stream, ContextMode mode, void *obj)
+LargeStrainMasterMaterialStatus :: saveContext(DataStream &stream, ContextMode mode)
 {
     contextIOResultType iores;
     Material *mat;
@@ -543,7 +543,7 @@ LargeStrainMasterMaterialStatus :: saveContext(DataStream *stream, ContextMode m
     sMat = dynamic_cast< StructuralMaterial * >(mat);
     MaterialStatus *mS = sMat->giveStatus(gp);
     // save parent class status
-    if ( ( iores = mS->saveContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = mS->saveContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
@@ -554,7 +554,7 @@ LargeStrainMasterMaterialStatus :: saveContext(DataStream *stream, ContextMode m
 
 
 contextIOResultType
-LargeStrainMasterMaterialStatus :: restoreContext(DataStream *stream, ContextMode mode, void *obj)
+LargeStrainMasterMaterialStatus :: restoreContext(DataStream &stream, ContextMode mode)
 //
 // restores full information stored in stream to this Status
 //
@@ -562,7 +562,7 @@ LargeStrainMasterMaterialStatus :: restoreContext(DataStream *stream, ContextMod
     contextIOResultType iores;
 
     // read parent class status
-    if ( ( iores = StructuralMaterialStatus :: restoreContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = StructuralMaterialStatus :: restoreContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 

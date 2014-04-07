@@ -525,7 +525,7 @@ MazarsMaterialStatus :: MazarsMaterialStatus(int n, Domain *d, GaussPoint *g) :
 }
 
 contextIOResultType
-MazarsMaterialStatus :: saveContext(DataStream *stream, ContextMode mode, void *obj)
+MazarsMaterialStatus :: saveContext(DataStream &stream, ContextMode mode)
 //
 // saves full information stored in this Status
 // no temp variables stored
@@ -533,12 +533,12 @@ MazarsMaterialStatus :: saveContext(DataStream *stream, ContextMode mode, void *
 {
     contextIOResultType iores;
     // save parent class status
-    if ( ( iores = IsotropicDamageMaterial1Status :: saveContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = IsotropicDamageMaterial1Status :: saveContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
     // write a raw data
-    if ( !stream->write(& lec, 1) ) {
+    if ( !stream.write(& lec, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
@@ -546,19 +546,19 @@ MazarsMaterialStatus :: saveContext(DataStream *stream, ContextMode mode, void *
 }
 
 contextIOResultType
-MazarsMaterialStatus :: restoreContext(DataStream *stream, ContextMode mode, void *obj)
+MazarsMaterialStatus :: restoreContext(DataStream &stream, ContextMode mode)
 //
 // restores full information stored in stream to this Status
 //
 {
     contextIOResultType iores;
     // read parent class status
-    if ( ( iores = IsotropicDamageMaterial1Status :: restoreContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = IsotropicDamageMaterial1Status :: restoreContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
     // read raw data
-    if ( !stream->read(& lec, 1) ) {
+    if ( !stream.read(& lec, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 

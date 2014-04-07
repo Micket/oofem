@@ -294,24 +294,12 @@ void LinearStatic :: solveYourselfAt(TimeStep *tStep)
 }
 
 
-contextIOResultType LinearStatic :: saveContext(DataStream *stream, ContextMode mode, void *obj)
+contextIOResultType LinearStatic :: saveContext(DataStream &stream, ContextMode mode)
 //
 // saves state variable - displacement vector
 //
 {
     contextIOResultType iores;
-    int closeFlag = 0;
-    FILE *file = NULL;
-
-    if ( stream == NULL ) {
-        if ( !this->giveContextFile(& file, this->giveCurrentStep()->giveNumber(),
-                                    this->giveCurrentStep()->giveVersion(), contextMode_write) ) {
-            THROW_CIOERR(CIO_IOERR); // override
-        }
-
-        stream = new FileDataStream(file);
-        closeFlag = 1;
-    }
 
     if ( ( iores = StructuralEngngModel :: saveContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
@@ -321,50 +309,23 @@ contextIOResultType LinearStatic :: saveContext(DataStream *stream, ContextMode 
         THROW_CIOERR(iores);
     }
 
-    if ( closeFlag ) {
-        fclose(file);
-        delete stream;
-        stream = NULL;
-    }
-
     return CIO_OK;
 }
 
 
-contextIOResultType LinearStatic :: restoreContext(DataStream *stream, ContextMode mode, void *obj)
+contextIOResultType LinearStatic :: restoreContext(DataStream &stream, ContextMode mode )
 //
 // restore state variable - displacement vector
 //
 {
     contextIOResultType iores;
-    int closeFlag = 0;
-    int istep, iversion;
-    FILE *file = NULL;
 
-    this->resolveCorrespondingStepNumber(istep, iversion, obj);
-
-    if ( stream == NULL ) {
-        if ( !this->giveContextFile(& file, istep, iversion, contextMode_read) ) {
-            THROW_CIOERR(CIO_IOERR); // override
-        }
-
-        stream = new FileDataStream(file);
-        closeFlag = 1;
-    }
-
-    if ( ( iores = StructuralEngngModel :: restoreContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = StructuralEngngModel :: restoreContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
     if ( ( iores = displacementVector.restoreYourself(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
-    }
-
-
-    if ( closeFlag ) {
-        fclose(file);
-        delete stream;
-        stream = NULL;
     }
 
     return CIO_OK;

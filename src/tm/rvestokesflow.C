@@ -116,14 +116,11 @@ RVEStokesFlowMaterialStatus :: updateYourself(TimeStep *tStep)
 
 
 contextIOResultType
-RVEStokesFlowMaterialStatus :: saveContext(DataStream *stream, ContextMode mode, void *obj)
+RVEStokesFlowMaterialStatus :: saveContext(DataStream &stream, ContextMode mode)
 {
     contextIOResultType iores;
-    if ( stream == NULL ) {
-        OOFEM_ERROR("can't write into NULL stream");
-    }
 
-    if ( ( iores = TransportMaterialStatus :: saveContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = TransportMaterialStatus :: saveContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
@@ -132,14 +129,11 @@ RVEStokesFlowMaterialStatus :: saveContext(DataStream *stream, ContextMode mode,
 
 
 contextIOResultType
-RVEStokesFlowMaterialStatus :: restoreContext(DataStream *stream, ContextMode mode, void *obj)
+RVEStokesFlowMaterialStatus :: restoreContext(DataStream &stream, ContextMode mode)
 {
     contextIOResultType iores;
-    if ( stream == NULL ) {
-        OOFEM_ERROR("can't write into NULL stream");
-    }
 
-    if ( ( iores = TransportMaterialStatus :: restoreContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = TransportMaterialStatus :: restoreContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 

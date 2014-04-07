@@ -124,7 +124,6 @@ double LinearStability :: giveUnknownComponent(ValueModeType mode, TimeStep *tSt
     }
 #endif
 
-    int activeVector = ( int ) tStep->giveTargetTime();
     switch ( mode ) {
     case VM_Total: // EigenVector
         if ( activeVector ) {
@@ -405,25 +404,14 @@ void LinearStability :: terminate(TimeStep *tStep)
 }
 
 
-contextIOResultType LinearStability :: saveContext(DataStream *stream, ContextMode mode, void *obj)
+contextIOResultType LinearStability :: saveContext(DataStream &stream, ContextMode mode)
 //
 // saves state variable - displacement vector
 //
 {
     contextIOResultType iores;
-    int closeFlag = 0;
-    FILE *file = NULL;
 
     OOFEM_LOG_INFO("Storing context \n");
-    if ( stream == NULL ) {
-        if ( !this->giveContextFile(& file, this->giveCurrentStep()->giveNumber(),
-                                    this->giveCurrentStep()->giveVersion(), contextMode_write) ) {
-            THROW_CIOERR(CIO_IOERR); // override
-        }
-
-        stream = new FileDataStream(file);
-        closeFlag = 1;
-    }
 
     if ( ( iores = StructuralEngngModel :: saveContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
@@ -441,73 +429,33 @@ contextIOResultType LinearStability :: saveContext(DataStream *stream, ContextMo
         THROW_CIOERR(iores);
     }
 
-    if ( closeFlag ) {
-        fclose(file);
-        delete stream;
-        stream = NULL;
-    }                                                        // ensure consistent records
-
     return CIO_OK;
 }
 
 
 
-contextIOResultType LinearStability :: restoreContext(DataStream *stream, ContextMode mode, void *obj)
+contextIOResultType LinearStability :: restoreContext(DataStream &stream, ContextMode mode )
 //
 // restore state variable - displacement vector
 //
 {
-    int activeVector, version;
-    int istep = 1, iversion = 1;
-    int closeFlag = 0;
     contextIOResultType iores;
-    FILE *file = NULL;
 
-    this->resolveCorrespondingStepNumber(activeVector, version, obj);
-    if ( eigVal.isEmpty() ) { // not restored before
-        if ( stream == NULL ) {
-            if ( !this->giveContextFile(& file, istep, iversion, contextMode_read) ) {
-                THROW_CIOERR(CIO_IOERR); // override
-            }
-
-            stream = new FileDataStream(file);
-            closeFlag = 1;
-        }
-
-        if ( ( iores = StructuralEngngModel :: restoreContext(stream, mode, ( void * ) & istep) ) != CIO_OK ) {
-            THROW_CIOERR(iores);
-        }
-
-        if ( ( iores = displacementVector.restoreYourself(stream, mode) ) != CIO_OK ) {
-            THROW_CIOERR(iores);
-        }
-
-        if ( ( iores = eigVal.restoreYourself(stream, mode) ) != CIO_OK ) {
-            THROW_CIOERR(iores);
-        }
-
-        if ( ( iores = eigVec.restoreYourself(stream, mode) ) != CIO_OK ) {
-            THROW_CIOERR(iores);
-        }
-
-        if ( closeFlag ) {
-            fclose(file);
-            delete stream;
-            stream = NULL;
-        }                                                    // ensure consistent records
+    if ( ( iores = StructuralEngngModel :: restoreContext(stream, mode) ) != CIO_OK ) {
+        THROW_CIOERR(iores);
     }
 
-    //  if (istep > numberOfRequiredEigenValues) istep = numberOfRequiredEigenValues ;
-    //  printf( "Restoring - corresponding index is %d, EigenValue is %lf\n",
-    //     istep,eigVal.at(istep));
-    //  setActiveVector (istep);
-    if ( activeVector > numberOfRequiredEigenValues ) {
-        activeVector = numberOfRequiredEigenValues;
+    if ( ( iores = displacementVector.restoreYourself(stream, mode) ) != CIO_OK ) {
+        THROW_CIOERR(iores);
     }
 
-    OOFEM_LOG_INFO( "Restoring - corresponding index is %d, EigenValue is %f\n",
-                   activeVector, eigVal.at(activeVector) );
-    this->giveCurrentStep()->setTime( ( double ) activeVector );
+    if ( ( iores = eigVal.restoreYourself(stream, mode) ) != CIO_OK ) {
+        THROW_CIOERR(iores);
+    }
+
+    if ( ( iores = eigVec.restoreYourself(stream, mode) ) != CIO_OK ) {
+        THROW_CIOERR(iores);
+    }
 
     return CIO_OK;
 }

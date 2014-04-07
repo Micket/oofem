@@ -168,12 +168,12 @@ ConcreteDPMStatus :: printOutputAt(FILE *file, TimeStep *tStep)
 }
 
 contextIOResultType
-ConcreteDPMStatus :: saveContext(DataStream *stream, ContextMode mode, void *obj)
+ConcreteDPMStatus :: saveContext(DataStream &stream, ContextMode mode)
 {
     contextIOResultType iores;
 
     // save parent class status
-    if ( ( iores = StructuralMaterialStatus :: saveContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = StructuralMaterialStatus :: saveContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
@@ -183,31 +183,31 @@ ConcreteDPMStatus :: saveContext(DataStream *stream, ContextMode mode, void *obj
         THROW_CIOERR(iores);
     }
 
-    if ( !stream->write(& kappaP, 1) ) {
+    if ( !stream.write(& kappaP, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->write(& kappaD, 1) ) {
+    if ( !stream.write(& kappaD, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->write(& equivStrain, 1) ) {
+    if ( !stream.write(& equivStrain, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->write(& damage, 1) ) {
+    if ( !stream.write(& damage, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->write(& state_flag, 1) ) {
+    if ( !stream.write(& state_flag, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->write(& deltaEquivStrain, 1) ) {
+    if ( !stream.write(& deltaEquivStrain, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->write(& le, 1) ) {
+    if ( !stream.write(& le, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
@@ -216,12 +216,12 @@ ConcreteDPMStatus :: saveContext(DataStream *stream, ContextMode mode, void *obj
 
 
 contextIOResultType
-ConcreteDPMStatus :: restoreContext(DataStream *stream, ContextMode mode, void *obj)
+ConcreteDPMStatus :: restoreContext(DataStream &stream, ContextMode mode)
 {
     contextIOResultType iores;
 
     // read parent class status
-    if ( ( iores = StructuralMaterialStatus :: restoreContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = StructuralMaterialStatus :: restoreContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
@@ -230,31 +230,31 @@ ConcreteDPMStatus :: restoreContext(DataStream *stream, ContextMode mode, void *
         THROW_CIOERR(iores);
     }
 
-    if ( !stream->read(& kappaP, 1) ) {
+    if ( !stream.read(& kappaP, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->read(& kappaD, 1) ) {
+    if ( !stream.read(& kappaD, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->read(& equivStrain, 1) ) {
+    if ( !stream.read(& equivStrain, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->read(& damage, 1) ) {
+    if ( !stream.read(& damage, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->read(& state_flag, 1) ) {
+    if ( !stream.read(& state_flag, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->read(& deltaEquivStrain, 1) ) {
+    if ( !stream.read(& deltaEquivStrain, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->read(& le, 1) ) {
+    if ( !stream.read(& le, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 

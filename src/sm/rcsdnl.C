@@ -502,7 +502,7 @@ RCSDNLMaterialStatus :: updateYourself(TimeStep *tStep)
 
 
 contextIOResultType
-RCSDNLMaterialStatus :: saveContext(DataStream *stream, ContextMode mode, void *obj)
+RCSDNLMaterialStatus :: saveContext(DataStream &stream, ContextMode mode)
 //
 // saves full information stored in this Status
 // no temp variables stored
@@ -511,7 +511,7 @@ RCSDNLMaterialStatus :: saveContext(DataStream *stream, ContextMode mode, void *
     contextIOResultType iores;
 
     // save parent class status
-    if ( ( iores = RCSDEMaterialStatus :: saveContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = RCSDEMaterialStatus :: saveContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
@@ -525,7 +525,7 @@ RCSDNLMaterialStatus :: saveContext(DataStream *stream, ContextMode mode, void *
 
 
 contextIOResultType
-RCSDNLMaterialStatus :: restoreContext(DataStream *stream, ContextMode mode, void *obj)
+RCSDNLMaterialStatus :: restoreContext(DataStream &stream, ContextMode mode)
 //
 // restores full information stored in stream to this Status
 //
@@ -533,7 +533,7 @@ RCSDNLMaterialStatus :: restoreContext(DataStream *stream, ContextMode mode, voi
     contextIOResultType iores;
 
     // read parent class status
-    if ( ( iores = RCSDEMaterialStatus :: restoreContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = RCSDEMaterialStatus :: restoreContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 

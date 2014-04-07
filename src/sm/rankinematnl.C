@@ -463,7 +463,7 @@ RankineMatNlStatus :: updateYourself(TimeStep *tStep)
 
 
 contextIOResultType
-RankineMatNlStatus :: saveContext(DataStream *stream, ContextMode mode, void *obj)
+RankineMatNlStatus :: saveContext(DataStream &stream, ContextMode mode)
 //
 // saves full information stored in this Status
 // no temp variables stored
@@ -471,28 +471,28 @@ RankineMatNlStatus :: saveContext(DataStream *stream, ContextMode mode, void *ob
 {
     contextIOResultType iores;
     // save parent class status
-    if ( ( iores = RankineMatStatus :: saveContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = RankineMatStatus :: saveContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
-    //if (!stream->write(&localEquivalentStrainForAverage,1)) THROW_CIOERR(CIO_IOERR);
+    //if (!stream.write(&localEquivalentStrainForAverage,1)) THROW_CIOERR(CIO_IOERR);
     return CIO_OK;
 }
 
 contextIOResultType
-RankineMatNlStatus :: restoreContext(DataStream *stream, ContextMode mode, void *obj)
+RankineMatNlStatus :: restoreContext(DataStream &stream, ContextMode mode)
 //
 // restores full information stored in stream to this Status
 //
 {
     contextIOResultType iores;
     // read parent class status
-    if ( ( iores = RankineMatStatus :: restoreContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = RankineMatStatus :: restoreContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
     // read raw data
-    //if (!stream->read (&localEquivalentStrainForAverage,1)) THROW_CIOERR(CIO_IOERR);
+    //if (!stream.read (&localEquivalentStrainForAverage,1)) THROW_CIOERR(CIO_IOERR);
 
     return CIO_OK;
 }

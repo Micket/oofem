@@ -129,12 +129,12 @@ DruckerPragerPlasticitySMStatus :: printOutputAt(FILE *file, TimeStep *tStep)
 }
 
 contextIOResultType
-DruckerPragerPlasticitySMStatus :: saveContext(DataStream *stream, ContextMode mode, void *obj)
+DruckerPragerPlasticitySMStatus :: saveContext(DataStream &stream, ContextMode mode)
 {
     contextIOResultType iores;
 
     // save parent class status
-    if ( ( iores = StructuralMaterialStatus :: saveContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = StructuralMaterialStatus :: saveContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
@@ -143,15 +143,15 @@ DruckerPragerPlasticitySMStatus :: saveContext(DataStream *stream, ContextMode m
         THROW_CIOERR(iores);
     }
 
-    if ( !stream->write(& volumetricPlasticStrain, 1) ) {
+    if ( !stream.write(& volumetricPlasticStrain, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->write(& kappa, 1) ) {
+    if ( !stream.write(& kappa, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->write(& temp_state_flag, 1) ) {
+    if ( !stream.write(& temp_state_flag, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
@@ -160,12 +160,12 @@ DruckerPragerPlasticitySMStatus :: saveContext(DataStream *stream, ContextMode m
 
 
 contextIOResultType
-DruckerPragerPlasticitySMStatus :: restoreContext(DataStream *stream, ContextMode mode, void *obj)
+DruckerPragerPlasticitySMStatus :: restoreContext(DataStream &stream, ContextMode mode)
 {
     contextIOResultType iores;
 
     // read parent class status
-    if ( ( iores = StructuralMaterialStatus :: restoreContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = StructuralMaterialStatus :: restoreContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
@@ -174,15 +174,15 @@ DruckerPragerPlasticitySMStatus :: restoreContext(DataStream *stream, ContextMod
         THROW_CIOERR(iores);
     }
 
-    if ( !stream->read(& volumetricPlasticStrain, 1) ) {
+    if ( !stream.read(& volumetricPlasticStrain, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->read(& kappa, 1) ) {
+    if ( !stream.read(& kappa, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->read(& temp_state_flag, 1) ) {
+    if ( !stream.read(& temp_state_flag, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 

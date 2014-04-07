@@ -173,10 +173,10 @@ FluidDynamicMaterial :: giveIPValue(FloatArray &answer, GaussPoint *gp, Internal
 
 
 contextIOResultType
-FluidDynamicMaterialStatus :: saveContext(DataStream *stream, ContextMode mode, void *obj)
+FluidDynamicMaterialStatus :: saveContext(DataStream &stream, ContextMode mode)
 {
     contextIOResultType iores;
-    if ( ( iores = MaterialStatus :: saveContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = MaterialStatus :: saveContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
@@ -193,10 +193,10 @@ FluidDynamicMaterialStatus :: saveContext(DataStream *stream, ContextMode mode, 
 
 
 contextIOResultType
-FluidDynamicMaterialStatus :: restoreContext(DataStream *stream, ContextMode mode, void *obj)
+FluidDynamicMaterialStatus :: restoreContext(DataStream &stream, ContextMode mode)
 {
     contextIOResultType iores;
-    if ( ( iores = MaterialStatus :: restoreContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = MaterialStatus :: restoreContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 

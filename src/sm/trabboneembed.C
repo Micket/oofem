@@ -274,12 +274,12 @@ TrabBoneEmbedStatus :: updateYourself(TimeStep *tStep)
 
 
 contextIOResultType
-TrabBoneEmbedStatus :: saveContext(DataStream *stream, ContextMode mode, void *obj)
+TrabBoneEmbedStatus :: saveContext(DataStream &stream, ContextMode mode)
 {
     contextIOResultType iores;
 
     // save parent class status
-    if ( ( iores = StructuralMaterialStatus :: saveContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = StructuralMaterialStatus :: saveContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
@@ -292,12 +292,12 @@ TrabBoneEmbedStatus :: saveContext(DataStream *stream, ContextMode mode, void *o
 
 
 contextIOResultType
-TrabBoneEmbedStatus :: restoreContext(DataStream *stream, ContextMode mode, void *obj)
+TrabBoneEmbedStatus :: restoreContext(DataStream &stream, ContextMode mode)
 {
     contextIOResultType iores;
 
     // read parent class status
-    if ( ( iores = StructuralMaterialStatus :: restoreContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = StructuralMaterialStatus :: restoreContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 

@@ -72,7 +72,7 @@ public:
     virtual int initializeAdaptive(int tStepNumber);
     virtual void terminate(TimeStep *tStep);
 
-    virtual contextIOResultType restoreContext(DataStream *stream, ContextMode mode, void *obj = NULL);
+    virtual contextIOResultType restoreContext(DataStream &stream, ContextMode mode);
 
     virtual void updateDomainLinks();
 

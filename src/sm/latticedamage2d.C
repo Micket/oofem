@@ -782,7 +782,7 @@ LatticeDamage2dStatus :: setTempNormalStress(double val)
 }
 
 contextIOResultType
-LatticeDamage2dStatus :: saveContext(DataStream *stream, ContextMode mode, void *obj)
+LatticeDamage2dStatus :: saveContext(DataStream &stream, ContextMode mode)
 //
 // saves full information stored in this Status
 // no temp variables stored
@@ -790,7 +790,7 @@ LatticeDamage2dStatus :: saveContext(DataStream *stream, ContextMode mode, void 
 {
     contextIOResultType iores;
     // save parent class status
-    if ( ( iores = StructuralMaterialStatus :: saveContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = StructuralMaterialStatus :: saveContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
@@ -802,35 +802,35 @@ LatticeDamage2dStatus :: saveContext(DataStream *stream, ContextMode mode, void 
     }
 
     // write a raw data
-    if ( !stream->write(& kappa, 1) ) {
+    if ( !stream.write(& kappa, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->write(& equivStrain, 1) ) {
+    if ( !stream.write(& equivStrain, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->write(& damage, 1) ) {
+    if ( !stream.write(& damage, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->write(& le, 1) ) {
+    if ( !stream.write(& le, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->write(& dissipation, 1) ) {
+    if ( !stream.write(& dissipation, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->write(& deltaDissipation, 1) ) {
+    if ( !stream.write(& deltaDissipation, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->write(& crack_flag, 1) ) {
+    if ( !stream.write(& crack_flag, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->write(& e0, 1) ) {
+    if ( !stream.write(& e0, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
@@ -867,14 +867,14 @@ LatticeDamage2dStatus :: giveCrackFlag()
 
 
 contextIOResultType
-LatticeDamage2dStatus :: restoreContext(DataStream *stream, ContextMode mode, void *obj)
+LatticeDamage2dStatus :: restoreContext(DataStream &stream, ContextMode mode)
 //
 // restores full information stored in stream to this Status
 //
 {
     contextIOResultType iores;
     // read parent class status
-    if ( ( iores = StructuralMaterialStatus :: restoreContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = StructuralMaterialStatus :: restoreContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
@@ -883,35 +883,35 @@ LatticeDamage2dStatus :: restoreContext(DataStream *stream, ContextMode mode, vo
     }
 
     // read raw data
-    if ( !stream->read(& kappa, 1) ) {
+    if ( !stream.read(& kappa, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->read(& equivStrain, 1) ) {
+    if ( !stream.read(& equivStrain, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->read(& damage, 1) ) {
+    if ( !stream.read(& damage, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->read(& le, 1) ) {
+    if ( !stream.read(& le, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->read(& dissipation, 1) ) {
+    if ( !stream.read(& dissipation, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->read(& deltaDissipation, 1) ) {
+    if ( !stream.read(& deltaDissipation, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->read(& crack_flag, 1) ) {
+    if ( !stream.read(& crack_flag, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->read(& e0, 1) ) {
+    if ( !stream.read(& e0, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 

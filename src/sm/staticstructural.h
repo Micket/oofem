@@ -88,8 +88,8 @@ public:
     virtual const char *giveInputRecordName() const { return _IFT_StaticStructural_Name; }
     virtual const char *giveClassName() const { return "StaticStructural"; }
 
-    virtual contextIOResultType saveContext(DataStream *stream, ContextMode mode, void *obj = NULL);
-    virtual contextIOResultType restoreContext(DataStream *stream, ContextMode mode, void *obj = NULL);
+    virtual contextIOResultType saveContext(DataStream &stream, ContextMode mode);
+    virtual contextIOResultType restoreContext(DataStream &stream, ContextMode mode);
 
 #ifdef __PARALLEL_MODE
     int estimateMaxPackSize(IntArray &commMap, CommunicationBuffer &buff, int packUnpackType);

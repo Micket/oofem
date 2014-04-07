@@ -612,14 +612,14 @@ LIBeam3d2 :: initForNewStep()
 
 
 
-contextIOResultType LIBeam3d2 :: saveContext(DataStream *stream, ContextMode mode, void *obj)
+contextIOResultType LIBeam3d2 :: saveContext(DataStream &stream, ContextMode mode)
 //
 // saves full element context (saves state variables, that completely describe
 // current state)
 //
 {
     contextIOResultType iores;
-    if ( ( iores = NLStructuralElement :: saveContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = NLStructuralElement :: saveContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
@@ -631,14 +631,14 @@ contextIOResultType LIBeam3d2 :: saveContext(DataStream *stream, ContextMode mod
 }
 
 
-contextIOResultType LIBeam3d2 :: restoreContext(DataStream *stream, ContextMode mode, void *obj)
+contextIOResultType LIBeam3d2 :: restoreContext(DataStream &stream, ContextMode mode)
 //
 // restores full element context (saves state variables, that completely describe
 // current state)
 //
 {
     contextIOResultType iores;
-    if ( ( iores = NLStructuralElement :: restoreContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = NLStructuralElement :: restoreContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 

@@ -40,6 +40,7 @@
 #include "timestep.h"
 #include "error.h"
 #include "oofeggraphiccontext.h"
+#include "datastream.h"
 
 
 #include "connectivitytable.h"
@@ -927,6 +928,24 @@ void ESICustomize(Widget parent_pane)
 #endif
 }
 
+
+bool tryRestore(int istep, int iversion)
+{
+    std :: unique_ptr< DataStream > stream;
+    if ( problem->giveContextFile(stream, istep, iversion, contextMode_read) ) {
+        try {
+            problem->restoreContext(*stream, CM_State);
+        } catch(ContextIOERR & m) {
+            m.print();
+            return false;
+        }
+    } else {
+        return false;
+    }
+    return true;
+}
+
+
 static void apply_change(Widget wid, XtPointer cl, XtPointer cd)
 {
     char buf [ 512 ];
@@ -944,28 +963,19 @@ void OOFEGSimpleCmd(char *buf)
 {
     char cmd [ 20 ];
     char *remain;
-    int stepinfo [ 2 ];
-    int istep, pstep, iversion = 0;
+    int istep, pstep;
 
     readSimpleString(buf, cmd, & remain); // read command
     if ( !strncmp(cmd, "active_step", 11) ) {
         pstep = gc [ 0 ].getActiveStep();
         istep = atoi(remain);
-        stepinfo [ 0 ] = istep;
-        stepinfo [ 1 ] = iversion;
-        try {
-            problem->restoreContext(NULL, CM_State, ( void * ) stepinfo);
-        } catch(ContextIOERR & m) {
-            m.print();
-            stepinfo [ 0 ] = pstep;
-            stepinfo [ 1 ] = iversion;
-            try {
-                problem->restoreContext(NULL, CM_State, ( void * ) stepinfo);
-            } catch(ContextIOERR & m2) {
-                m2.print();
-                exit(1);
-            }
+
+        if ( tryRestore(istep, 0) ) {
+        } else if ( tryRestore(pstep, 0) ) {
             istep = pstep;
+        } else {
+            printf("Giving up, can't restore\n");
+            exit(1);
         }
         gc [ 0 ].setActiveStep(istep);
 
@@ -973,17 +983,9 @@ void OOFEGSimpleCmd(char *buf)
 
         //problem ->forceEquationNumbering();
     } else if ( !strncmp(cmd, "active_eigen_value", 18) ) {
-        istep = atoi(remain);
-        gc [ 0 ].setActiveStep(istep);
-        stepinfo [ 0 ] = istep;
-        stepinfo [ 1 ] = iversion;
-        try {
-            problem->restoreContext(NULL, CM_State, ( void * ) stepinfo);
-        } catch(ContextIOERR & m) {
-            m.print();
-            exit(1);
-        }
-        gc [ 0 ].setActiveEigVal(istep);
+        int eignum = atoi(remain);
+        problem->setActiveEigenValue(eignum);
+        gc [ 0 ].setActiveEigVal(eignum);
     } else if ( !strncmp(cmd, "set_def_scale", 13) ) {
         gc [ 0 ].setDefScale( strtod(remain, NULL) );
         if ( strtod(remain, NULL) < 0 ) {
@@ -1130,7 +1132,6 @@ int  updateDefPlotFlag()
 void nextStep(Widget wid, XtPointer cl, XtPointer cd)
 {
     int istep, prevStep, stepStep, prevStepVersion, istepVersion;
-    int stepInfo [ 2 ];
 
     stepStep = problem->giveContextOutputStep();
     if ( stepStep == 0 ) {
@@ -1142,63 +1143,31 @@ void nextStep(Widget wid, XtPointer cl, XtPointer cd)
         prevStepVersion = gc [ 0 ].getActiveStepVersion();
 
         // first try next version for the same step
-        if ( problem->testContextFile(prevStep, prevStepVersion + 1) ) {
+        istepVersion = prevStepVersion + 1;
+        
+        if ( tryRestore(prevStep, prevStepVersion + 1) ) {
+            istep = prevStep;
             istepVersion = prevStepVersion + 1;
-            stepInfo [ 0 ] = prevStep;
-            stepInfo [ 1 ] = istepVersion;
-            printf("OOFEG: restoring context file %d.%d\n", stepInfo [ 0 ], stepInfo [ 1 ]);
-            try {
-                problem->restoreContext(NULL, CM_State, ( void * ) stepInfo);
-            } catch(ContextIOERR & m) {
-                m.print();
-                istepVersion = 0;
-                stepInfo [ 0 ] = prevStep;
-                stepInfo [ 1 ] = 0;
-                try {
-                    problem->restoreContext(NULL, CM_State, ( void * ) stepInfo);
-                } catch(ContextIOERR & m2) {
-                    m2.print();
-                    exit(1);
-                }
-            }
-            gc [ 0 ].setActiveStep(prevStep);
-            gc [ 0 ].setActiveStepVersion(istepVersion);
-        } else {
-            // no next version exist => next step with version 0
+        } else if ( tryRestore(prevStep + stepStep, 0) ) {
             istep = prevStep + stepStep;
-            stepInfo [ 0 ] = istep;
-            stepInfo [ 1 ] = 0;
-
-            //printf ("NextStep: prevStep %d, nstep %d, stepStep %d\n", prevStep, istep, stepStep);
-            try {
-                problem->restoreContext(NULL, CM_State, ( void * ) stepInfo);
-            } catch(ContextIOERR & m) {
-                m.print();
-                stepInfo [ 0 ] = prevStep;
-                stepInfo [ 1 ] = 0;
-                try {
-                    problem->restoreContext(NULL, CM_State, ( void * ) stepInfo);
-                } catch(ContextIOERR & m2) {
-                    m2.print();
-                    exit(1);
-                }
-                istep = prevStep;
-            }
-            gc [ 0 ].setActiveStep(istep);
-            gc [ 0 ].setActiveStepVersion(0);
+            istepVersion = 0;
+        } else if ( tryRestore(prevStep, prevStepVersion) ) {
+            istep = prevStep;
+            istepVersion = prevStepVersion;
+        } else {
+            printf("Giving up, can't restore\n");
+            exit(1);
         }
     } else {
         istep = problem->giveNumberOfFirstStep() + stepStep - 1;
-        gc [ 0 ].setActiveStep(istep);
-        stepInfo [ 0 ] = istep;
-        stepInfo [ 1 ] = 0;
-        try {
-            problem->restoreContext(NULL, CM_State, ( void * ) stepInfo);
-        } catch(ContextIOERR & m) {
-            m.print();
+        istepVersion = 0;
+        if ( !tryRestore(istep, istepVersion) ) {
+            printf("Failed to open context file to restore from.\n");
             exit(1);
         }
     }
+    gc [ 0 ].setActiveStep(istep);
+    gc [ 0 ].setActiveStepVersion(istepVersion);
 
     updateGraphics();
 }
@@ -1206,7 +1175,6 @@ void nextStep(Widget wid, XtPointer cl, XtPointer cd)
 void previousStep(Widget wid, XtPointer cl, XtPointer cd)
 {
     int istep, prevStep, stepStep = problem->giveContextOutputStep();
-    int stepInfo [ 2 ];
     if ( stepStep == 0 ) {
         stepStep = 1;
     }
@@ -1215,37 +1183,26 @@ void previousStep(Widget wid, XtPointer cl, XtPointer cd)
         prevStep = gc [ 0 ].getActiveStep();
         istep = prevStep - stepStep;
         if ( istep >= 0 ) {
-            stepInfo [ 0 ] = istep;
-            stepInfo [ 1 ] = 0;
-            try {
-                problem->restoreContext(NULL, CM_State, ( void * ) stepInfo);
-            } catch(ContextIOERR & m) {
-                m.print();
-                stepInfo [ 0 ] = prevStep;
-                stepInfo [ 1 ] = 0;
-                try {
-                    problem->restoreContext(NULL, CM_State, ( void * ) stepInfo);
-                } catch(ContextIOERR & m2) {
-                    m2.print();
-                    exit(1);
-                }
+            if ( tryRestore(istep, 0) ) {
+            } else if ( tryRestore(prevStep, 0) ) {
                 istep = prevStep;
+            } else {
+                printf("Failed to open context file to restore from.\n");
+                exit(1);
             }
             gc [ 0 ].setActiveStep(istep);
             gc [ 0 ].setActiveStepVersion(0);
         }
     } else {
-        istep = 1;
-        gc [ 0 ].setActiveStep(istep);
-        gc [ 0 ].setActiveStepVersion(0);
-        stepInfo [ 0 ] = istep;
-        stepInfo [ 1 ] = 0;
-        try {
-            problem->restoreContext(NULL, CM_State, ( void * ) stepInfo);
-        } catch(ContextIOERR & m) {
-            m.print();
+        if ( tryRestore(1, 0) ) {
+            istep = 1;
+        } else {
+            printf("Failed to open context file to restore from.\n");
             exit(1);
         }
+
+        gc [ 0 ].setActiveStep(istep);
+        gc [ 0 ].setActiveStepVersion(0);
     }
 
     updateGraphics();
@@ -2165,8 +2122,7 @@ pass_setanimate_command(Widget w, XtPointer ptr, XtPointer call_data)
     Arg al [ 2 ];
     char *s;
     int estep, sstep;
-    int stepinfo [ 2 ];
-    int istep, iversion = 0;
+    int istep;
 
     ac = 0;
     XtSetArg(al [ ac ], XtNstring, & s);
@@ -2194,12 +2150,8 @@ pass_setanimate_command(Widget w, XtPointer ptr, XtPointer call_data)
     }
 
     for ( istep = sstep; istep <= estep; istep++ ) {
-        stepinfo [ 0 ] = istep;
-        stepinfo [ 1 ] = iversion;
-        try {
-            problem->restoreContext(NULL, CM_State, ( void * ) stepinfo);
-        } catch(ContextIOERR & m) {
-            m.print();
+        if ( !tryRestore(istep, 0) ) {
+            printf("Couldn't restore step %d.\n", istep);
             return;
         }
         gc [ 0 ].setActiveStep(istep);

@@ -343,12 +343,12 @@ LargeStrainMasterMaterialGradStatus :: updateYourself(TimeStep *tStep)
 // saves full information stored in this status
 // temporary variables are NOT stored
 contextIOResultType
-LargeStrainMasterMaterialGradStatus :: saveContext(DataStream *stream, ContextMode mode, void *obj)
+LargeStrainMasterMaterialGradStatus :: saveContext(DataStream &stream, ContextMode mode)
 {
     contextIOResultType iores;
 
     // save parent class status
-    if ( ( iores = LargeStrainMasterMaterialStatus :: saveContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = LargeStrainMasterMaterialStatus :: saveContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
@@ -359,7 +359,7 @@ LargeStrainMasterMaterialGradStatus :: saveContext(DataStream *stream, ContextMo
 
 
 contextIOResultType
-LargeStrainMasterMaterialGradStatus :: restoreContext(DataStream *stream, ContextMode mode, void *obj)
+LargeStrainMasterMaterialGradStatus :: restoreContext(DataStream &stream, ContextMode mode)
 //
 // restores full information stored in stream to this Status
 //
@@ -367,7 +367,7 @@ LargeStrainMasterMaterialGradStatus :: restoreContext(DataStream *stream, Contex
     contextIOResultType iores;
 
     // read parent class status
-    if ( ( iores = LargeStrainMasterMaterialStatus :: restoreContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = LargeStrainMasterMaterialStatus :: restoreContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 

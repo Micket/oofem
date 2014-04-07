@@ -157,7 +157,7 @@ IntegrationRule :: initForNewStep()
 
 
 contextIOResultType
-IntegrationRule :: saveContext(DataStream *stream, ContextMode mode, void *obj)
+IntegrationRule :: saveContext(DataStream &stream, ContextMode mode)
 {
     //
     // saves full  context (saves state variables, that completely describe
@@ -166,12 +166,7 @@ IntegrationRule :: saveContext(DataStream *stream, ContextMode mode, void *obj)
 
     contextIOResultType iores;
 
-    if ( stream == NULL ) {
-        OOFEM_ERROR("can't write into NULL stream");
-    }
-
-    int isdyn = isDynamic;
-    if ( !stream->write(& isdyn, 1) ) {
+    if ( !stream.write(isDynamic) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
@@ -180,16 +175,16 @@ IntegrationRule :: saveContext(DataStream *stream, ContextMode mode, void *obj)
     }
 
     if ( mode & CM_Definition ) {
-        if ( !stream->write(& numberOfIntegrationPoints, 1) ) {
+        if ( !stream.write(& numberOfIntegrationPoints, 1) ) {
             THROW_CIOERR(CIO_IOERR);
         }
 
         // write first and last integration indices
-        if ( !stream->write(& firstLocalStrainIndx, 1) ) {
+        if ( !stream.write(& firstLocalStrainIndx, 1) ) {
             THROW_CIOERR(CIO_IOERR);
         }
 
-        if ( !stream->write(& lastLocalStrainIndx, 1) ) {
+        if ( !stream.write(& lastLocalStrainIndx, 1) ) {
             THROW_CIOERR(CIO_IOERR);
         }
     }
@@ -199,7 +194,7 @@ IntegrationRule :: saveContext(DataStream *stream, ContextMode mode, void *obj)
         if ( mode & CM_Definition ) {
             // write gp weight, coordinates, element number, and material mode
             double dval = gp->giveWeight();
-            if ( !stream->write(& dval, 1) ) {
+            if ( !stream.write(& dval, 1) ) {
                 THROW_CIOERR(CIO_IOERR);
             }
 
@@ -208,9 +203,9 @@ IntegrationRule :: saveContext(DataStream *stream, ContextMode mode, void *obj)
             }
 
             //int ival = gp->giveElement()->giveNumber();
-            //if (!stream->write(&ival,1)) THROW_CIOERR(CIO_IOERR);
+            //if (!stream.write(&ival,1)) THROW_CIOERR(CIO_IOERR);
             int mmode = gp->giveMaterialMode();
-            if ( !stream->write(& mmode, 1) ) {
+            if ( !stream.write(& mmode, 1) ) {
                 THROW_CIOERR(CIO_IOERR);
             }
         }
@@ -225,7 +220,7 @@ IntegrationRule :: saveContext(DataStream *stream, ContextMode mode, void *obj)
 }
 
 contextIOResultType
-IntegrationRule :: restoreContext(DataStream *stream, ContextMode mode, void *obj)
+IntegrationRule :: restoreContext(DataStream &stream, ContextMode mode)
 {
     //
     // restores full element context (saves state variables, that completely describe
@@ -235,34 +230,26 @@ IntegrationRule :: restoreContext(DataStream *stream, ContextMode mode, void *ob
     contextIOResultType iores;
     int size;
     bool __create = false;
-    //Element* __parelem = (Element*) obj;
 
-    if ( stream == NULL ) {
-        OOFEM_ERROR("can't write into NULL stream");
-    }
-
-    int isdyn;
-    if ( !stream->read(& isdyn, 1) ) {
+    if ( !stream.read(isDynamic) ) {
         THROW_CIOERR(CIO_IOERR);
     }
-
-    isDynamic = ( bool ) isdyn;
 
     if ( isDynamic ) {
         mode |= CM_Definition;          // store definition if dynamic
     }
 
     if ( mode & CM_Definition ) {
-        if ( !stream->read(& size, 1) ) {
+        if ( !stream.read(& size, 1) ) {
             THROW_CIOERR(CIO_IOERR);
         }
 
         // read first and last integration indices
-        if ( !stream->read(& firstLocalStrainIndx, 1) ) {
+        if ( !stream.read(& firstLocalStrainIndx, 1) ) {
             THROW_CIOERR(CIO_IOERR);
         }
 
-        if ( !stream->read(& lastLocalStrainIndx, 1) ) {
+        if ( !stream.read(& lastLocalStrainIndx, 1) ) {
             THROW_CIOERR(CIO_IOERR);
         }
 
@@ -278,7 +265,7 @@ IntegrationRule :: restoreContext(DataStream *stream, ContextMode mode, void *ob
         if ( mode & CM_Definition ) {
             // read weight
             double w;
-            if ( !stream->read(& w, 1) ) {
+            if ( !stream.read(& w, 1) ) {
                 THROW_CIOERR(CIO_IOERR);
             }
 
@@ -290,10 +277,10 @@ IntegrationRule :: restoreContext(DataStream *stream, ContextMode mode, void *ob
 
             // restore element and material mode
             //int n;
-            //if (!stream->read(&n,1)) THROW_CIOERR(CIO_IOERR);
+            //if (!stream.read(&n,1)) THROW_CIOERR(CIO_IOERR);
             MaterialMode m;
             int _m;
-            if ( !stream->read(& _m, 1) ) {
+            if ( !stream.read(& _m, 1) ) {
                 THROW_CIOERR(CIO_IOERR);
             }
 

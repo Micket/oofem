@@ -331,38 +331,35 @@ void MasterDof :: printYourself()
 }
 
 
-contextIOResultType MasterDof :: saveContext(DataStream *stream, ContextMode mode, void *obj)
+contextIOResultType MasterDof :: saveContext(DataStream &stream, ContextMode mode)
 //
 // saves full node context (saves state variables, that completely describe
 // current state)
 //
 {
     contextIOResultType iores;
-    if ( stream == NULL ) {
-        OOFEM_ERROR("can't write into NULL stream");
-    }
 
-    if ( ( iores = Dof :: saveContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = Dof :: saveContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
     if ( mode & CM_Definition ) {
-        if ( !stream->write(& bc, 1) ) {
+        if ( !stream.write(& bc, 1) ) {
             THROW_CIOERR(CIO_IOERR);
         }
 
-        if ( !stream->write(& ic, 1) ) {
+        if ( !stream.write(& ic, 1) ) {
             THROW_CIOERR(CIO_IOERR);
         }
     }
 
     // store equation number of receiver
-    if ( !stream->write(& equationNumber, 1) ) {
+    if ( !stream.write(& equationNumber, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
     if ( ( mode & CM_UnknownDictState ) || ( dofManager->giveDomain()->giveEngngModel()->requiresUnknownsDictionaryUpdate() ) ) {
-        if ( ( iores = unknowns->saveContext(stream, mode, obj) ) != CIO_OK ) {
+        if ( ( iores = unknowns->saveContext(stream, mode) ) != CIO_OK ) {
             THROW_CIOERR(iores);
         }
     }
@@ -371,39 +368,36 @@ contextIOResultType MasterDof :: saveContext(DataStream *stream, ContextMode mod
 }
 
 
-contextIOResultType MasterDof :: restoreContext(DataStream *stream, ContextMode mode, void *obj)
+contextIOResultType MasterDof :: restoreContext(DataStream &stream, ContextMode mode)
 //
 // restores full node context (saves state variables, that completely describe
 // current state)
 //
 {
     contextIOResultType iores;
-    if ( stream == NULL ) {
-        OOFEM_ERROR("can't write into NULL stream");
-    }
 
-    if ( ( iores = Dof :: restoreContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = Dof :: restoreContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
     if ( mode & CM_Definition ) {
-        if ( !stream->read(& bc, 1) ) {
+        if ( !stream.read(& bc, 1) ) {
             THROW_CIOERR(CIO_IOERR);
         }
 
-        if ( !stream->read(& ic, 1) ) {
+        if ( !stream.read(& ic, 1) ) {
             THROW_CIOERR(CIO_IOERR);
         }
     }
 
 
     // read equation number of receiver
-    if ( !stream->read(& equationNumber, 1) ) {
+    if ( !stream.read(& equationNumber, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
     if ( ( mode & CM_UnknownDictState ) || ( dofManager->giveDomain()->giveEngngModel()->requiresUnknownsDictionaryUpdate() ) ) {
-        if ( ( iores = unknowns->restoreContext(stream, mode, obj) ) != CIO_OK ) {
+        if ( ( iores = unknowns->restoreContext(stream, mode) ) != CIO_OK ) {
             THROW_CIOERR(iores);
         }
     }

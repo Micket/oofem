@@ -1414,12 +1414,12 @@ TrabBone3DStatus :: updateYourself(TimeStep *tStep)
 
 
 contextIOResultType
-TrabBone3DStatus :: saveContext(DataStream *stream, ContextMode mode, void *obj)
+TrabBone3DStatus :: saveContext(DataStream &stream, ContextMode mode)
 {
     contextIOResultType iores;
 
     // save parent class status
-    if ( ( iores = StructuralMaterialStatus :: saveContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = StructuralMaterialStatus :: saveContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
@@ -1428,15 +1428,15 @@ TrabBone3DStatus :: saveContext(DataStream *stream, ContextMode mode, void *obj)
     }
 
 
-    if ( !stream->write(& dam, 1) ) {
+    if ( !stream.write(& dam, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->write(& kappa, 1) ) {
+    if ( !stream.write(& kappa, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->write(& beta, 1) ) {
+    if ( !stream.write(& beta, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
@@ -1468,12 +1468,12 @@ TrabBone3DStatus :: saveContext(DataStream *stream, ContextMode mode, void *obj)
 
 
 contextIOResultType
-TrabBone3DStatus :: restoreContext(DataStream *stream, ContextMode mode, void *obj)
+TrabBone3DStatus :: restoreContext(DataStream &stream, ContextMode mode)
 {
     contextIOResultType iores;
 
     // read parent class status
-    if ( ( iores = StructuralMaterialStatus :: restoreContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = StructuralMaterialStatus :: restoreContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
@@ -1483,15 +1483,15 @@ TrabBone3DStatus :: restoreContext(DataStream *stream, ContextMode mode, void *o
     }
 
 
-    if ( !stream->read(& dam, 1) ) {
+    if ( !stream.read(& dam, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->read(& kappa, 1) ) {
+    if ( !stream.read(& kappa, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
-    if ( !stream->read(& beta, 1) ) {
+    if ( !stream.read(& beta, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 

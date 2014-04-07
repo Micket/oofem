@@ -222,6 +222,33 @@ Quad1MindlinShell3D :: computeBmatrixAt(GaussPoint *gp, FloatMatrix &answer, int
 
         this->interp.evaldNdx( dns, lc, FEIVertexListGeometryWrapper(4, ( const FloatArray ** ) lnodes) );
         this->interp.evalN( ns, lc,  FEIVoidCellGeometry() );
+    } else if ( /*this->mitc*/ true ) {
+        // Compute the shear components at each edge midpoint:
+        FloatArray lc0, lc1, lc2, lc3;
+        lc0.setValues(2, -1.0, 0.);
+        lc1.setValues(2,  1.0, 0.);
+        lc2.setValues(2,  0.0, -1.0);
+        lc3.setValues(2,  0.0,  1.0);
+        FloatMatrix dn0, dn1, dn2, dn3;
+        this->interp.evaldNdx( dn0, lc0, FEIVertexListGeometryWrapper(4, ( const FloatArray ** ) lnodes) );
+        this->interp.evaldNdx( dn1, lc1, FEIVertexListGeometryWrapper(4, ( const FloatArray ** ) lnodes) );
+        this->interp.evaldNdx( dn2, lc2, FEIVertexListGeometryWrapper(4, ( const FloatArray ** ) lnodes) );
+        this->interp.evaldNdx( dn3, lc3, FEIVertexListGeometryWrapper(4, ( const FloatArray ** ) lnodes) );
+        // We put in the basis functions directly, as they are trivial (always 0.5 or 0 on the edge midpoints)
+        // Construct a joint "dns" matrix 
+        // The interpolation is 0.5*(1+ksi),  0.5*(1-ksi) in the ksi direction (between point 0 and 1)
+        // The interpolation is 0.5*(1+eta),  0.5*(1-eta) in the eta direction (between point 2 and 3)
+        double ksi = localCoords.at(1);
+        double eta = localCoords.at(2);
+        ns.resize(4);
+        ns.at(1) = 0.25*(1.-ksi);
+        ns.at(2) = 0.25*(1.+ksi);
+        ns.at(3) = 0.25*(1.-eta);
+        ns.at(4) = 0.25*(1.+eta);
+        dns.add(0.5*(1.-ksi), dn0);
+        dns.add(0.5*(1.+ksi), dn1);
+        dns.add(0.5*(1.-eta), dn2);
+        dns.add(0.5*(1.+eta), dn3);
     } else {
         dns = dn;
         ns = n;

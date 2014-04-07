@@ -1279,7 +1279,7 @@ IsotropicDamageMaterial1Status :: giveInterface(InterfaceType type)
 
 
 contextIOResultType
-IsotropicDamageMaterial1Status :: saveContext(DataStream *stream, ContextMode mode, void *obj)
+IsotropicDamageMaterial1Status :: saveContext(DataStream &stream, ContextMode mode)
 //
 // saves full information stored in this Status
 // no temp variables stored
@@ -1287,12 +1287,12 @@ IsotropicDamageMaterial1Status :: saveContext(DataStream *stream, ContextMode mo
 {
     contextIOResultType iores;
     // save parent class status
-    if ( ( iores = IsotropicDamageMaterialStatus :: saveContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = IsotropicDamageMaterialStatus :: saveContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
     // write a raw data
-    if ( !stream->write(& le, 1) ) {
+    if ( !stream.write(& le, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
@@ -1300,19 +1300,19 @@ IsotropicDamageMaterial1Status :: saveContext(DataStream *stream, ContextMode mo
 }
 
 contextIOResultType
-IsotropicDamageMaterial1Status :: restoreContext(DataStream *stream, ContextMode mode, void *obj)
+IsotropicDamageMaterial1Status :: restoreContext(DataStream &stream, ContextMode mode)
 //
 // restores full information stored in stream to this Status
 //
 {
     contextIOResultType iores;
     // read parent class status
-    if ( ( iores = IsotropicDamageMaterialStatus :: restoreContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = IsotropicDamageMaterialStatus :: restoreContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
     // read raw data
-    if ( !stream->read(& le, 1) ) {
+    if ( !stream.read(& le, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 

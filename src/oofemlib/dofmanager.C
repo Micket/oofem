@@ -642,7 +642,7 @@ void DofManager :: updateYourself(TimeStep *tStep)
 }
 
 
-contextIOResultType DofManager :: saveContext(DataStream *stream, ContextMode mode, void *obj)
+contextIOResultType DofManager :: saveContext(DataStream &stream, ContextMode mode)
 //
 // saves full node context (saves state variables, that completely describe
 // current state)
@@ -651,19 +651,19 @@ contextIOResultType DofManager :: saveContext(DataStream *stream, ContextMode mo
     int _val;
     contextIOResultType iores;
 
-    if ( ( iores = FEMComponent :: saveContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = FEMComponent :: saveContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
 
-    if ( !stream->write(& numberOfDofs, 1) ) {
+    if ( !stream.write(& numberOfDofs, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
     // store dof types
     for ( int i = 1; i <= numberOfDofs; i++ ) {
         _val = this->giveDof(i)->giveDofType();
-        if ( !stream->write(& _val, 1) ) {
+        if ( !stream.write(& _val, 1) ) {
             THROW_CIOERR(CIO_IOERR);
         }
     }
@@ -673,21 +673,21 @@ contextIOResultType DofManager :: saveContext(DataStream *stream, ContextMode mo
             THROW_CIOERR(iores);
         }
 
-        if ( !stream->write(isBoundaryFlag) ) {
+        if ( !stream.write(isBoundaryFlag) ) {
             THROW_CIOERR(CIO_IOERR);
         }
 
-        if ( !stream->write(hasSlaveDofs) ) {
+        if ( !stream.write(hasSlaveDofs) ) {
             THROW_CIOERR(CIO_IOERR);
         }
 
 #ifdef __PARALLEL_MODE
-        if ( !stream->write(& globalNumber, 1) ) {
+        if ( !stream.write(& globalNumber, 1) ) {
             THROW_CIOERR(CIO_IOERR);
         }
 
         _val = ( int ) parallel_mode;
-        if ( !stream->write(& _val, 1) ) {
+        if ( !stream.write(& _val, 1) ) {
             THROW_CIOERR(CIO_IOERR);
         }
 
@@ -699,7 +699,7 @@ contextIOResultType DofManager :: saveContext(DataStream *stream, ContextMode mo
     }
 
     for ( int i = 1; i <= numberOfDofs; i++ ) {
-        if ( ( iores = this->giveDof(i)->saveContext(stream, mode, obj) ) != CIO_OK ) {
+        if ( ( iores = this->giveDof(i)->saveContext(stream, mode) ) != CIO_OK ) {
             THROW_CIOERR(iores);
         }
     }
@@ -708,7 +708,7 @@ contextIOResultType DofManager :: saveContext(DataStream *stream, ContextMode mo
 }
 
 
-contextIOResultType DofManager :: restoreContext(DataStream *stream, ContextMode mode, void *obj)
+contextIOResultType DofManager :: restoreContext(DataStream &stream, ContextMode mode)
 //
 // restores full node context (saves state variables, that completely describe
 // current state)
@@ -716,19 +716,19 @@ contextIOResultType DofManager :: restoreContext(DataStream *stream, ContextMode
 {
     contextIOResultType iores;
 
-    if ( ( iores = FEMComponent :: restoreContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = FEMComponent :: restoreContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
     int _numberOfDofs;
-    if ( !stream->read(& _numberOfDofs, 1) ) {
+    if ( !stream.read(& _numberOfDofs, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
     IntArray dtypes(_numberOfDofs);
     // restore dof types
     for ( int i = 1; i <= _numberOfDofs; i++ ) {
-        if ( !stream->read(& dtypes.at(i), 1) ) {
+        if ( !stream.read(& dtypes.at(i), 1) ) {
             THROW_CIOERR(CIO_IOERR);
         }
     }
@@ -770,21 +770,21 @@ contextIOResultType DofManager :: restoreContext(DataStream *stream, ContextMode
             THROW_CIOERR(iores);
         }
 
-        if ( !stream->read(isBoundaryFlag) ) {
+        if ( !stream.read(isBoundaryFlag) ) {
             THROW_CIOERR(CIO_IOERR);
         }
 
-        if ( !stream->read(hasSlaveDofs) ) {
+        if ( !stream.read(hasSlaveDofs) ) {
             THROW_CIOERR(CIO_IOERR);
         }
 
 #ifdef __PARALLEL_MODE
-        if ( !stream->read(& globalNumber, 1) ) {
+        if ( !stream.read(& globalNumber, 1) ) {
             THROW_CIOERR(CIO_IOERR);
         }
 
         int _val;
-        if ( !stream->read(& _val, 1) ) {
+        if ( !stream.read(& _val, 1) ) {
             THROW_CIOERR(CIO_IOERR);
         }
 
@@ -797,7 +797,7 @@ contextIOResultType DofManager :: restoreContext(DataStream *stream, ContextMode
     }
 
     for ( int i = 1; i <= numberOfDofs; i++ ) {
-        if ( ( iores = this->giveDof(i)->restoreContext(stream, mode, obj) ) != CIO_OK ) {
+        if ( ( iores = this->giveDof(i)->restoreContext(stream, mode) ) != CIO_OK ) {
             THROW_CIOERR(iores);
         }
     }

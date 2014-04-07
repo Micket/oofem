@@ -900,12 +900,12 @@ MisesMatStatus :: updateYourself(TimeStep *tStep)
 // saves full information stored in this status
 // temporary variables are NOT stored
 contextIOResultType
-MisesMatStatus :: saveContext(DataStream *stream, ContextMode mode, void *obj)
+MisesMatStatus :: saveContext(DataStream &stream, ContextMode mode)
 {
     contextIOResultType iores;
 
     // save parent class status
-    if ( ( iores = StructuralMaterialStatus :: saveContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = StructuralMaterialStatus :: saveContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
@@ -917,12 +917,12 @@ MisesMatStatus :: saveContext(DataStream *stream, ContextMode mode, void *obj)
     }
 
     // write cumulative plastic strain (scalar)
-    if ( !stream->write(& kappa, 1) ) {
+    if ( !stream.write(& kappa, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
     // write damage (scalar)
-    if ( !stream->write(& damage, 1) ) {
+    if ( !stream.write(& damage, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
@@ -932,7 +932,7 @@ MisesMatStatus :: saveContext(DataStream *stream, ContextMode mode, void *obj)
 
 
 contextIOResultType
-MisesMatStatus :: restoreContext(DataStream *stream, ContextMode mode, void *obj)
+MisesMatStatus :: restoreContext(DataStream &stream, ContextMode mode)
 //
 // restores full information stored in stream to this Status
 //
@@ -940,7 +940,7 @@ MisesMatStatus :: restoreContext(DataStream *stream, ContextMode mode, void *obj
     contextIOResultType iores;
 
     // read parent class status
-    if ( ( iores = StructuralMaterialStatus :: restoreContext(stream, mode, obj) ) != CIO_OK ) {
+    if ( ( iores = StructuralMaterialStatus :: restoreContext(stream, mode) ) != CIO_OK ) {
         THROW_CIOERR(iores);
     }
 
@@ -950,12 +950,12 @@ MisesMatStatus :: restoreContext(DataStream *stream, ContextMode mode, void *obj
     }
 
     // read cumulative plastic strain (scalar)
-    if ( !stream->read(& kappa, 1) ) {
+    if ( !stream.read(& kappa, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
     // read damage (scalar)
-    if ( !stream->read(& damage, 1) ) {
+    if ( !stream.read(& damage, 1) ) {
         THROW_CIOERR(CIO_IOERR);
     }
 
